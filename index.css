@@ -1,4 +1,38 @@
 body {
     width: 80%;
     margin: auto;
+    float: top;
+
+    font-family: sans-serif;
+    background-color: aliceblue;
+}
+
+
+#SortingHat {
+    /*background-color: gainsboro;*/
+    position: relative;
+    width: 95%;
+    margin: auto;
+    max-width: 1200px;
+}
+
+
+#buttons_container {
+    width: 100%;
+    margin: auto;
+}
+
+
+#buttons_container fieldset {
+    width: 20%;
+    position: relative;
+    /*width: auto;*/
+    display: inline-block;
+    border: none;
+}
+
+
+button {
+    margin: auto;
+    position: relative;
 }
