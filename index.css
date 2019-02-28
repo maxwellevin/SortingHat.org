@@ -14,7 +14,7 @@ body {
 
 h1 {
     font-size: 48pt;
-    font-family: 'Permanent Marker';
+    font-family: 'Permanent Marker', serif;
     width: fit-content;
     margin: auto;
 }
