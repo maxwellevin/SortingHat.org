@@ -33,8 +33,14 @@
         <li id="gender_container">
             <fieldset>
                 <legend>Set Gender Ratios</legend>
-                <input id="female_ratio" type="range" min="0" max="100" value="100" class="slider">
-                <input id="male_ratio" type="range" min="0" max="100" value="100" class="slider">
+                    <div id="female_slider">
+                        <input id="female_ratio_input" type="range" min="0" max="100" value="100" class="slider" oninput="female_ratio_output.value = female_ratio_input.value">
+                        <output id="female_ratio_output">100</output>
+                    </div>
+                    <div id="male_slider">
+                        <input id="male_ratio_input" type="range" min="0" max="100" value="100" class="slider" oninput="male_ratio_output.value = male_ratio_input.value">
+                        <output id="male_ratio_output">100</output>
+                    </div>
                 <p>These sliders set the maximum percentage of male or female students allowed in any given
                     section/class. Setting the slider to 70% for female students would mean that any section should
                     be composed of at most 70% female students.</p>
@@ -43,7 +49,8 @@
         <li id="athlete_container">
             <fieldset>
                 <legend>Set Athlete Ratio</legend>
-                <input id="athlete_ratio" type="range" min="0" max="100" value="100" class="slider">
+                    <input id="athlete_ratio_input" type="range" min="0" max="100" value="100" class="slider" oninput="athlete_ratio_output.value = athlete_ratio_input.value">
+                    <output id="athlete_ratio_output">100</output>
                 <p>These sliders set the maximum percentage of student-athletes allowed in any given section/class.</p>
             </fieldset>
         </li>
