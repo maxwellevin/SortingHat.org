@@ -1,38 +1,44 @@
+@import url('https://fonts.googleapis.com/css?family=Merriweather:300|Permanent+Marker');
+
 body {
     width: 80%;
     margin: auto;
     float: top;
-
-    font-family: sans-serif;
-    background-color: aliceblue;
+    font-size: 12pt;
+    font-family: "Merriweather", serif;
+    font-style: italic;
+    background-image: url("res/wall4.png");
+    background-repeat: repeat;
 }
 
 
-#SortingHat {
-    /*background-color: gainsboro;*/
-    position: relative;
+h1 {
+    font-size: 48pt;
+    font-family: 'Permanent Marker';
+    width: fit-content;
+    margin: auto;
+}
+
+#Controls {
     width: 95%;
-    margin: auto;
     max-width: 1200px;
-}
-
-
-#buttons_container {
-    width: 100%;
-    margin: auto;
-}
-
-
-#buttons_container fieldset {
-    width: 20%;
     position: relative;
-    /*width: auto;*/
-    display: inline-block;
-    border: none;
+    margin: auto;
+    background-color: rgba(200, 215, 225, 0.4);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 30px;
+}
+
+
+legend {
+    width: fit-content;
+    font-style: normal;
 }
 
 
 button {
+    width: fit-content;
     margin: auto;
     position: relative;
 }
