@@ -14,11 +14,33 @@
     their class preferences. This program also ensures that classes gender balances are within a reasonable threshold of
     the overall student population in addition to ensuring that each class does not have too many athletes.</p>
 
-<div id="buttons_container">
-    <button id="upload_student">Upload Students' CSV</button>
-    <button id="upload_section">Upload Sections' CSV</button>
-    <button id="run" disabled>Run</button>
-    <button id="download" disabled>Download Results</button>
+<div id="SortingHat">
+    <!-- Container for all interactive buttons. -->
+    <div id="buttons_container">
+        <!--Button to allow the user to upload a csv file with student information -->
+        <fieldset>
+            <legend>Upload Students' CSV</legend>
+            <button id="upload_student">Choose File</button>
+        </fieldset>
+        <!--Button to allow the user to upload a csv file with section information -->
+        <fieldset>
+            <legend>Upload Sections' CSV</legend>
+            <button id="upload_section">Choose File</button>
+        </fieldset>
+        <!-- Button to start the program. Disabled until proper CSV files are uploaded. -->
+        <fieldset>
+            <button id="run" disabled>Run</button>
+        </fieldset>
+        <!-- Button to download the allocation results. Disabled until the program has run successfully. -->
+        <fieldset>
+            <button id="download" disabled>Save As</button>
+        </fieldset>
+    </div>
+
+    <!-- Container to display a report of the program's allocation.-->
+    <div id="report_display">
+
+    </div>
 </div>
 
 </body>
