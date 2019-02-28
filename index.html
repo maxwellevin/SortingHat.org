@@ -8,40 +8,61 @@
 </head>
 <body>
 
-<h1>The Sorting Hat</h1>
-<p>
-    This program efficiently assigns first-year Lewis & Clark students to their first-year seminar courses based on
-    their class preferences. This program also ensures that classes gender balances are within a reasonable threshold of
-    the overall student population in addition to ensuring that each class does not have too many athletes.</p>
+<h1>Sorting Hat</h1>
+<p>This program efficiently assigns first-year Lewis & Clark students to their first-year seminar courses based on their
+    class preferences. This program also ensures that classes gender balances are within a reasonable threshold of the
+    overall student population in addition to ensuring that each class does not have too many athletes.</p>
 
-<div id="SortingHat">
-    <!-- Container for all interactive buttons. -->
-    <div id="buttons_container">
-        <!--Button to allow the user to upload a csv file with student information -->
-        <fieldset>
-            <legend>Student File</legend>
-            <button id="upload_student">Choose File</button>
-        </fieldset>
-        <!--Button to allow the user to upload a csv file with section information -->
-        <fieldset>
-            <legend>Sections File</legend>
-            <button id="upload_section">Choose File</button>
-        </fieldset>
-        <!-- Button to start the program. Disabled until proper CSV files are uploaded. -->
-        <fieldset>
-            <button id="run" disabled>Run</button>
-        </fieldset>
-        <!-- Button to download the allocation results. Disabled until the program has run successfully. -->
-        <fieldset>
-            <button id="download" disabled>Save As</button>
-        </fieldset>
-    </div>
 
-    <!-- Container to display a report of the program's allocation.-->
-    <div id="report_display">
+<div id="Controls">
+    <ol>
+        <li id="students_container">
+            <fieldset>
+                <legend>Choose Students File</legend>
+                <button id="upload_student">Choose File</button>
+                <p hidden></p>  <!--For reporting stats or errors-->
+            </fieldset>
+        </li>
+        <li id="sections_container">
+            <fieldset>
+                <legend>Choose Sections File</legend>
+                <button id="upload_section">Choose File</button>
+                <p hidden></p>  <!--For reporting stats or errors-->
+            </fieldset>
+        </li>
+        <li id="gender_container">
+            <fieldset>
+                <legend>Set Gender Ratios</legend>
+                <input id="female_ratio" type="range" min="0" max="100" value="100" class="slider">
+                <input id="male_ratio" type="range" min="0" max="100" value="100" class="slider">
+                <p>These sliders set the maximum percentage of male or female students allowed in any given
+                    section/class. Setting the slider to 70% for female students would mean that any section should
+                    be composed of at most 70% female students.</p>
+            </fieldset>
+        </li>
+        <li id="athlete_container">
+            <fieldset>
+                <legend>Set Athlete Ratio</legend>
+                <input id="athlete_ratio" type="range" min="0" max="100" value="100" class="slider">
+                <p>These sliders set the maximum percentage of student-athletes allowed in any given section/class.</p>
+            </fieldset>
+        </li>
+        <li id="run_container">
+            <fieldset>
+                <legend>Run the Program</legend>
+                <button id="run" disabled>Run</button>
+            </fieldset>
+        </li>
+        <li id="download_container">
+            <fieldset>
+                <legend>Save the Results to File</legend>
+                <button id="download" disabled>Save As</button>
+            </fieldset>
+        </li>
+    </ol>
 
-    </div>
 </div>
+
 
 </body>
 </html>
