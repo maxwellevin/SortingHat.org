@@ -5,6 +5,7 @@
     <title>Sorting Hat</title>
     <link rel="shortcut icon" href="res/icon.ico">
     <link rel="stylesheet" href="index.css">
+    <script src="js/papaparse/papaparse.js"></script>
     <script type="text/javascript" src="index.js"></script>
 </head>
 <body>
@@ -20,15 +21,15 @@
         <li id="students_container">
             <fieldset>
                 <legend>Choose Students File</legend>
-                <button id="upload_student">Choose File</button>
-                <p hidden></p>  <!--For reporting stats or errors-->
+                <input type="file" id="upload_student" accept="text/csv">
+                <p id="student_log" hidden></p>  <!--For reporting stats or errors-->
             </fieldset>
         </li>
         <li id="sections_container">
             <fieldset>
                 <legend>Choose Sections File</legend>
-                <button id="upload_section">Choose File</button>
-                <p hidden></p>  <!--For reporting stats or errors-->
+                <input type="file" id="upload_section" accept="text/csv">
+                <p id="section_log" hidden></p>  <!--For reporting stats or errors-->
             </fieldset>
         </li>
         <li id="gender_container">
@@ -77,6 +78,11 @@
 
 </div>
 
+<div id="credits">
+    <p>
+<!--    Created by Maxwell Levin and Lars Mayrand-->
+    </p>
+</div>
 
 </body>
 </html>
