@@ -2,21 +2,29 @@
 
 window.onload = function () {
 
-    // Add event listeners for "Choose File" buttons
+    /** Add event listeners for "Choose File" buttons */
     document.getElementById("upload_student").onchange = handleStudentFile;
     document.getElementById("upload_section").onchange = handleSectionFile;
 
 
+    /** Boolean values to track handling of students and sections. */
+    let studentsHandled = false;
+    let sectionsHandled = false;
+
+
     /** Handles the student csv file uploading. */
     function handleStudentFile() {
+        studentsHandled = false;
+        handleRunButton();
         let file = document.getElementById("upload_student").files[0];
-        Papa.parse(file, {  // This is asynchronous so how do we actually deal with this?
-            // step: function(results) {
-            //     console.log("Row:", results.data);
-            // },
+        Papa.parse(file, {
+            step: function (results) {
+                // TODO: Build students array
+                console.log("Row:", results.data);
+            },
             complete: function (results) {
-                // All the magic happens here
-                console.log("Finished");
+                studentsHandled = true;
+                handleRunButton();  // checks to see if sections are handled too
             }
         });
     }
@@ -24,14 +32,30 @@ window.onload = function () {
 
     /** Handles the section csv file uploading. */
     function handleSectionFile() {
+        sectionsHandled = false;
+        handleRunButton();
         let file = document.getElementById("upload_section").files[0];
-        Papa.parse(file, {  // This is asynchronous so how do we actually deal with this?
+        Papa.parse(file, {
+            step: function (results) {
+                // TODO: Build sections array
+                console.log("Row:", results.data);
+            },
             complete: function (results) {
-                // All the magic happens here
+                sectionsHandled = true;
+                handleRunButton();  // checks to see if students are handled too
             }
         });
         console.log("Picked Section File");
-        return -1;
+    }
+
+
+    /** Toggles the state of the 'run' button based on the states of studentsHandled and sectionsHandled. */
+    function handleRunButton() {
+        if (studentsHandled && sectionsHandled) {
+            document.getElementById("run").disabled = false;
+        } else {
+            document.getElementById("run").disabled = true;
+        }
     }
 
 
