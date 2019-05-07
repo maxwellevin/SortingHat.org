@@ -1,0 +1,59 @@
+{
+  "_from": "munkres-js",
+  "_id": "munkres-js@1.2.2",
+  "_inBundle": false,
+  "_integrity": "sha1-4D2YBo1F1YexX1Y+uGDrZ6qFKLc=",
+  "_location": "/munkres-js",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "munkres-js",
+    "name": "munkres-js",
+    "escapedName": "munkres-js",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/munkres-js/-/munkres-js-1.2.2.tgz",
+  "_shasum": "e03d98068d45d587b15f563eb860eb67aa8528b7",
+  "_spec": "munkres-js",
+  "_where": "/Users/maxwelllevin",
+  "author": {
+    "name": "Anna Henningsen",
+    "email": "sqrt@entless.org"
+  },
+  "bugs": {
+    "url": "https://github.com/addaleax/munkres-js/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Munkres (aka Hungarian) algorithm for JS",
+  "devDependencies": {
+    "coveralls": "^2.11.12",
+    "mocha": "^3.0.2",
+    "nyc": "^10.0.0",
+    "should": "^11.1.0"
+  },
+  "homepage": "https://github.com/addaleax/munkres-js",
+  "keywords": [
+    "assignment",
+    "munkres",
+    "hungarian"
+  ],
+  "license": "Apache-2.0 OR BSD-3-Clause",
+  "main": "munkres.js",
+  "name": "munkres-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/addaleax/munkres-js.git"
+  },
+  "scripts": {
+    "test": "nyc mocha"
+  },
+  "version": "1.2.2"
+}
