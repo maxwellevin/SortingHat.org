@@ -22,13 +22,23 @@ window.onload = function () {
     let initialSectionsData = {};  // ID: "Core Section #"
 
 
+    /** Object to keep track of the students who have been assigned a section prior to running the script. */
+    let preassignedStudents = {};
+
+
     /** Objects to keep track of the students and sections data filtered from the original inputs. These are used as
      * inputs in the hungarian/munkres algorithm. */
     let studentsData = {};  // ID: "ID"
     let sectionsData = {};  // ID: "Core Section #"
 
-    /** The results of the hungarian/munkres algorithm. This is an object with a key of student id and a value of their
-     * assigned section. */
+
+    /** The results of the hungarian/munkres algorithm. This is an object with a key of student id and a value of the
+     * student's assigned section number. */
+    let munkres = {};
+
+
+    /** The results of the hungarian/munkres algorithm combined with the existing allocations. This is an object with a
+     * key key of student id and a value of the student's assigned section number. */
     let allocations = {};
 
 
@@ -89,6 +99,7 @@ window.onload = function () {
 
     /** Toggles the state of the 'run' button based on the states of studentsHandled and sectionsHandled. */
     function handleRunButton() {
+        document.getElementById("save_as").disabled = true;
         if (studentsHandled && sectionsHandled) {
             document.getElementById("run").disabled = false;
         } else {
@@ -101,7 +112,7 @@ window.onload = function () {
     function runProgram() {
         document.getElementById("run").disabled = true;
 
-        let preassignedStudents = filterInputData();
+        preassignedStudents = filterInputData();
         console.log("The following students have already been assigned sections:");
         console.log(preassignedStudents);
 
@@ -113,11 +124,17 @@ window.onload = function () {
         console.log("The cost matrix has been built:");
         console.log(costMatrix);
 
-        let allocations = getAllocations(costMatrix, seats);
+        munkres = getAllocations(costMatrix, seats);
         console.log("The hungarian algorithm has been run. The allocations are:");
-        console.log(allocations);
+        console.log(munkres);
+
+        // Combine the algorithm's allocations with previous allocations
+        allocations = combineAllocations(munkres, preassignedStudents);
+
+        // TODO: Generate a report of the gender/athlete balances, smallest classes, most popular class choice, etc.
 
         document.getElementById("run").disabled = false;
+        document.getElementById("save_as").disabled = false;
     }
 
 
@@ -137,7 +154,7 @@ window.onload = function () {
 
             // For each student, check if they have already been assigned a section
             if (student["Placement"] !== "") {
-                preassignedStudents[key] = student;
+                preassignedStudents[key] = student["Placement"];
                 let sectionKey = student["Placement"];
                 sectionsData[sectionKey]["Student Cap"] -= 1;
             }
@@ -262,6 +279,19 @@ window.onload = function () {
     }
 
 
+    /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
+     * section is not in the student's preferences, then the function returns false. Note: students are allowed six
+     * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
+    function getPreferenceNumber(student, sectionID) {
+        for (let i = 1; i < 7; i++) {
+            if (student["Choice " + i] === sectionID) {
+                return i;
+            }
+        }
+        return false;
+    }
+
+
     /** Runs the hungarian algorithm on the given matrix and returns the allocations. An allocation is an object where
      * the key is the student's id and the values are pointers to the student's object and the allocated section's
      * object. */
@@ -280,27 +310,38 @@ window.onload = function () {
             let assignedSection = seats[index].section;
 
             // Build the objects
-            allocations[currentStudent["ID"]] = {
-                section: assignedSection
-            };
+            allocations[currentStudent["ID"]] = assignedSection["Core Section #"];
         });
 
         // Return the results
         return allocations;
-
     }
 
 
-    /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
-     * section is not in the student's preferences, then the function returns false. Note: students are allowed six
-     * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
-    function getPreferenceNumber(student, sectionID) {
-        for (let i = 1; i < 7; i++) {
-            if (student["Choice " + i] === sectionID) {
-                return i;
-            }
-        }
-        return false;
+    /** Combines the allocations from the munkres/hungarian algorithm with the existing allocations. Returns an object
+     * with student ID as a key and "Core Section #" as the value. */
+    function combineAllocations(m, a) {
+        Object.keys(a).forEach(function (key, _) {
+            m[key] = a[key];
+        });
+        return m;
+    }
+
+
+    /** Saves the results of the program upon a successful run of the algorithm. */
+    function saveResults() {
+        // Convert the allocations object to an array
+        let results = ["Student ID,Core Section #"];  // Headers
+        Object.keys(allocations).forEach(function (key, _) {
+            results.push(key + "," +  allocations[key]);
+        });
+
+        // Convert the array to a string
+        let data = results.join("\n");
+
+        // Save the string to a new file. Note: Not possible to open save as dialog box through javascript.
+        let blob = new Blob([data], {type: "text/csv;charset=utf-8"});
+        saveAs(blob, "sortedhat.csv");
     }
 
 
@@ -321,9 +362,4 @@ window.onload = function () {
         return document.getElementById("athlete_ratio_input").value / 100;
     }
 
-
-    /** Saves the results of the program upon a successful run of the algorithm. */
-    function saveResults() {
-        // TODO: Save the results to a csv file of the user's designation
-    }
 };
