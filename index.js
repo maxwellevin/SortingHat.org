@@ -25,11 +25,6 @@ window.onload = function () {
     let sectionsData = {};  // ID: "Core Section #"
 
 
-    /** The sum of the class limits minus the number of pre-assigned students. This is the number of columns in the cost
-     * matrix, each of which represents a "job" for the hungarian algorithm to allocate. */
-    let numAvailableSeats;
-
-
     /** Handles the student csv file uploading. */
     function handleStudentFile() {
         studentsHandled = false;
