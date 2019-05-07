@@ -49,7 +49,6 @@ window.onload = function () {
                 arr[student["ID"]] = student;
             },
             complete: function (results, file) {
-                console.log(results);
                 initialStudentsData = arr;
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
@@ -99,18 +98,11 @@ window.onload = function () {
     /** Launches the meat of the program and reports the results. */
     function runProgram() {
         document.getElementById("run").disabled = true;
-        console.log("Read input data:");
-        // console.log(initialStudentsData);
-        // console.log(initialSectionsData);
 
-        console.log(Object.keys(initialStudentsData));
+        let preassignedStudents = filterInputData();
+        console.log("The following students have already been assigned sections:");
+        console.log(preassignedStudents);
 
-        // These are filtered versions of the original data where pre-assigned students are removed from the students
-        // array and sections are updated to reflect the student cap with pre-assigned students.
-        console.log("Filtering input data:");
-        filterInputData();
-        // console.log(studentsData);
-        // console.log(sectionsData);
 
         // TODO: Handle pre-assigned students
         // TODO: Compute size of the cost matrix & optionally handle obvious errors
@@ -124,24 +116,31 @@ window.onload = function () {
 
 
     /** Filters the original students and sections data to account for pre-assigned students and students with illegal
-     * preferences. Returns an array containing an array of students and an array of sections. */
+     * preferences. Updates studentsData and sectionsData global objects and returns an object for the preassigned
+     * students. */
     function filterInputData() {
-        studentsData = [];
+        let preassignedStudents = {};
+
+        // Ensure that studentsData is empty and that sectionsData is a hard copy of the initial sections data.
+        studentsData = {};
         sectionsData = Object.assign([], initialSectionsData);
-        let studentKeys = Object.keys(initialStudentsData);
-        // console.log(studentKeys);
-        // console.log(initialStudentsData);
-        Object.keys(initialStudentsData).forEach(function (key, index) {
-            console.log(key);
+
+        // Iterate through the students by using their keys (ID's)
+        Object.keys(initialStudentsData).forEach(function (key, _) {
             let student = initialStudentsData[key];
-            // console.log(student);
-            if (student["Placement"] !== "") {  // Student has already been assigned a section
+
+            // For each student, check if they have already been assigned a section
+            if (student["Placement"] !== "") {
+                preassignedStudents[key] = student;
                 let sectionKey = student["Placement"];
                 sectionsData[sectionKey]["Student Cap"] -= 1;
-            } else {  // Student needs to be assigned a section, so they get copied
+            }
+            // If they haven't already been assigned, (hard) copy them to a new object to use with the algorithm.
+            else {
                 studentsData[key] = Object.assign([], student);
             }
         });
+        return preassignedStudents;
     }
 
 
