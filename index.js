@@ -132,6 +132,7 @@ window.onload = function () {
         allocations = combineAllocations(munkres, preassignedStudents);
 
         // TODO: Generate a report of the gender/athlete balances, smallest classes, most popular class choice, etc.
+        let report = createReport();
 
         document.getElementById("run").disabled = false;
         document.getElementById("save_as").disabled = false;
@@ -158,9 +159,9 @@ window.onload = function () {
                 let sectionKey = student["Placement"];
                 sectionsData[sectionKey]["Student Cap"] -= 1;
             }
-            // If they haven't already been assigned, (hard) copy them to a new object to use with the algorithm.
+            // If they haven't already been assigned, copy them to a new object to use with the algorithm.
             else {
-                studentsData[key] = Object.assign([], student);
+                studentsData[key] = student;
             }
         });
         return preassignedStudents;
@@ -297,7 +298,7 @@ window.onload = function () {
      * object. */
     function getAllocations(matrix, seats) {
         // Initialize the allocations object
-        allocations = {};
+        let munkres = {};
 
         // Run the Munkres/Hungarian algorithm on the cost matrix
         let indices = new Munkres().compute(matrix);
@@ -305,26 +306,83 @@ window.onload = function () {
         // Loop through the students data
         let i = 0;
         Object.keys(studentsData).forEach(function (key, _) {
-            let currentStudent = studentsData[key];
             let index = indices[i++][1];  // The allocation is the second entry
             let assignedSection = seats[index].section;
 
             // Build the objects
-            allocations[currentStudent["ID"]] = assignedSection["Core Section #"];
+            munkres[key] = assignedSection["Core Section #"];
         });
 
+
         // Return the results
-        return allocations;
+        return munkres;
     }
 
 
     /** Combines the allocations from the munkres/hungarian algorithm with the existing allocations. Returns an object
      * with student ID as a key and "Core Section #" as the value. */
     function combineAllocations(m, a) {
+        let b = Object.assign({}, m);
         Object.keys(a).forEach(function (key, _) {
-            m[key] = a[key];
+            b[key] = a[key];
         });
-        return m;
+        return b;
+    }
+
+
+    /** Computes a number of different statistics about the allocated students. Returns an object. */
+    function createReport() {
+        let report = {};
+
+        // Records % of students getting their preferences. Index 0 = not a preference, 1-6 correspond with 1-6 pref.
+        let m_pref = [0, 0, 0, 0, 0, 0, 0];  // munkres preference performance
+        let a_pref = [0, 0, 0, 0, 0, 0, 0];  // overall preference performance
+
+        // Compute preference performance of the munkres allocations
+        Object.keys(munkres).forEach(function (key, _) {
+            let student = studentsData[key];
+            let sectionID = allocations[key];
+            let pref = getPreferenceNumber(student, sectionID);
+            if (pref) {
+                m_pref[pref]++;
+            }
+            else {
+                m_pref[0]++;
+            }
+        });
+        for (let i = 0; i < 7; i++) {
+            m_pref[i] /= Object.keys(studentsData).length;
+            m_pref[i] *= 100;
+        }
+
+        // Compute overall preference performance
+        Object.keys(allocations).forEach(function (key, _) {
+            let student = initialStudentsData[key];
+            let sectionID = allocations[key];
+            let pref = getPreferenceNumber(student, sectionID);
+            if (pref) {
+                a_pref[pref]++;
+            }
+            else {
+                a_pref[0]++;
+            }
+        });
+        for (let i = 0; i < 7; i++) {
+            a_pref[i] /= Object.keys(studentsData).length;
+            a_pref[i] *= 100;
+        }
+
+
+
+        console.log(m_pref);
+        console.log(a_pref);
+        return report;
+    }
+
+
+    /** Takes a report object and makes it look nice in html. */
+    function printReport(report) {
+
     }
 
 
@@ -333,7 +391,7 @@ window.onload = function () {
         // Convert the allocations object to an array
         let results = ["Student ID,Core Section #"];  // Headers
         Object.keys(allocations).forEach(function (key, _) {
-            results.push(key + "," +  allocations[key]);
+            results.push(key + "," + allocations[key]);
         });
 
         // Convert the array to a string
