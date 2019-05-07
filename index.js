@@ -1,5 +1,8 @@
 "use strict";
 
+// TODO: Generate a report of the program's performance
+// TODO: Activate the save button
+
 window.onload = function () {
 
     /** Add event listeners for actionable buttons */
@@ -23,6 +26,10 @@ window.onload = function () {
      * inputs in the hungarian/munkres algorithm. */
     let studentsData = {};  // ID: "ID"
     let sectionsData = {};  // ID: "Core Section #"
+
+    /** The results of the hungarian/munkres algorithm. This is an object with a key of student id and a value of their
+     * assigned section. */
+    let allocations = {};
 
 
     /** Handles the student csv file uploading. */
@@ -98,18 +105,19 @@ window.onload = function () {
         console.log("The following students have already been assigned sections:");
         console.log(preassignedStudents);
 
-
         let seats = buildSeatObjects();
         console.log("The following seats have been prepared:");
         console.log(seats);
 
-        // TODO: Compute size of the cost matrix & optionally handle obvious errors
-        // TODO: Implement mapping of column index (seat) to section // DONE: Column index = seat index
-        // TODO: Implement construction of cost matrix
-        // TODO: Implement or borrow hungarian/munkres algorithm for allocations
-        // TODO: Retrieve allocations from algorithm
-        // TODO: Generate a report of the program's performance
-        // TODO: Activate the save button
+        let costMatrix = buildCostMatrix(seats);
+        console.log("The cost matrix has been built:");
+        console.log(costMatrix);
+
+        let allocations = getAllocations(costMatrix, seats);
+        console.log("The hungarian algorithm has been run. The allocations are:");
+        console.log(allocations);
+
+        document.getElementById("run").disabled = false;
     }
 
 
@@ -189,19 +197,110 @@ window.onload = function () {
         return seatsArray;
     }
 
+
     /** Constructs the cost matrix based on user-input parameters and the students/sections arrays. Returns a matrix of
      * weights which represent the cost of assigning the student (represented by a row) to a seat in a class
      * (represented by individual columns, stacked sequentially). */
-    function buildCostMatrix() {
-        /* Define parameters for the cost matrix based on user-defined configurations. */
+    function buildCostMatrix(seats) {
+        let matrix = [];
+
+        // Define parameters for the cost matrix based on user-defined configurations.
         let alpha = 3.5;
         let defaultWeight = Math.pow(alpha, 7);
         let illegalWeight = Math.pow(alpha, 9);
-        let minFemaleRatio = 1 - getFemaleRatioInput();
-        let minMaleRatio = 1 - getMaleRatioInput();
-        let minNonAthleteRatio = 1 - getAthleteRatioInput();
+
+        // Loop through the students
+        Object.keys(studentsData).forEach(function (key, index) {
+            let student = studentsData[key];
+            let arr = [];
+
+            // Loop through the seats
+            for (let i = 0; i < seats.length; i++) {
+                let seat = seats[i];
+
+                // Get how desirable the seat is for the student
+                let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);  // TODO: make this use ID
+
+                // Determine if the student is not eligible or willing to take the seat
+                if (!prefNum || (seat.reserved && (student["Gender"] !== seat.gender))) {
+                    arr[i] = illegalWeight;
+                    continue;
+                }
+
+                // Set the cost according to the student's preferences.
+                arr[i] = Math.pow(alpha, prefNum);
+            }
+
+            // Push the student's costs to the cost matrix
+            matrix.push(arr);
+        });
+
+        // Loop through the dummy students (Placeholders)
+        for (let i = 0; i < seats.length - Object.keys(studentsData).length; i++) {
+            let arr = [];
+
+            // Loop through the seats
+            for (let j = 0; j < seats.length; j++) {
+                let seat = seats[j];
+
+                // If the seat is gendered, it should be reserved for actual students.
+                if (seat.reserved) {
+                    arr[j] = illegalWeight;
+                    continue;
+                }
+
+                // All other seats should have a cost greater than any potential seats for students.
+                arr[j] = defaultWeight;
+            }
+
+            // Push the dummy student's costs to the cost matrix
+            matrix.push(arr);
+        }
+
+        // Return the cost matrix
+        return matrix;
+    }
 
 
+    /** Runs the hungarian algorithm on the given matrix and returns the allocations. An allocation is an object where
+     * the key is the student's id and the values are pointers to the student's object and the allocated section's
+     * object. */
+    function getAllocations(matrix, seats) {
+        // Initialize the allocations object
+        allocations = {};
+
+        // Run the Munkres/Hungarian algorithm on the cost matrix
+        let indices = new Munkres().compute(matrix);
+
+        // Loop through the students data
+        let i = 0;
+        Object.keys(studentsData).forEach(function (key, _) {
+            let currentStudent = studentsData[key];
+            let index = indices[i++][1];  // The allocation is the second entry
+            let assignedSection = seats[index].section;
+
+            // Build the objects
+            allocations[currentStudent["ID"]] = {
+                section: assignedSection
+            };
+        });
+
+        // Return the results
+        return allocations;
+
+    }
+
+
+    /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
+     * section is not in the student's preferences, then the function returns false. Note: students are allowed six
+     * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
+    function getPreferenceNumber(student, sectionID) {
+        for (let i = 1; i < 7; i++) {
+            if (student["Choice " + i] === sectionID) {
+                return i;
+            }
+        }
+        return false;
     }
 
 
