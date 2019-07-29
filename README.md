@@ -29,3 +29,13 @@ section.
 Other headers and columns are permitted to be in the student csv file, but the program will not be able to use data 
 from columns that have headers named something other than what is specified above.
 
+
+### Step 2: Upload the Sections File
+Click the "Choose file" button under the sections tab to upload a csv containing information about sections. This 
+file must have the following headers (order does not matter):
+
+* "Core Section #" - the unique identifier for the given section. 
+* "Professor" - the primary instructor for the section.
+* "Student Cap" - the number of students allowed to take the class. 
+
+Presently no additional headers are supported.  
