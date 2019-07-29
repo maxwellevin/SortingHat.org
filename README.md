@@ -5,6 +5,7 @@ Sort students into classes with this cutting edge interface.
 ## Instructions
 
 ### Step 1: Upload the Students File
+
 Click the "Choose file" button under the students tab to upload a csv containing information about students. This 
 file must have the following headers (order does not matter):
 
@@ -31,6 +32,7 @@ from columns that have headers named something other than what is specified abov
 
 
 ### Step 2: Upload the Sections File
+
 Click the "Choose file" button under the sections tab to upload a csv containing information about sections. This 
 file must have the following headers (order does not matter):
 
@@ -38,4 +40,16 @@ file must have the following headers (order does not matter):
 * "Professor" - the primary instructor for the section.
 * "Student Cap" - the number of students allowed to take the class. 
 
-Presently no additional headers are supported.  
+Presently no additional headers are supported. 
+
+
+### Step 3: Set Maximum Gender Ratios
+
+SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such 
+aspect is the maximum gender ratio in any section. By moving the slider users can set the maximum percentage of male or 
+female students allowed in a section. 
+
+### Step 4: Set Maximum Athlete Ratio
+
+Users are also given the option of controlling the maximum percentage of student-athletes in a section, though this 
+feature is not yet implemented.
