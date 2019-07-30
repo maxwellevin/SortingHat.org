@@ -53,3 +53,25 @@ female students allowed in a section.
 
 Users are also given the option of controlling the maximum percentage of student-athletes in a section, though this 
 feature is not yet implemented.
+
+
+### Step 5: Run the Program
+
+Click the "Run" button to run the program. This typically takes less than 10 seconds, but may the time taken will vary 
+based on the number of students and sections provided. Upon determining an optimal allocation the program will output
+a brief summary of the results below the page. If these results are not satisfactory, you may try running the program 
+again with slightly different gender or athlete ratios. 
+
+### Step 6: Save the Results
+
+When the results are satisfactory, click on the "Save" button to save the results to a local file. The file will be a 
+csv with the following headers:
+
+* "Student ID" - the ID of the student according to "ID" in the csv file pertaining to students.
+* "Core Section #" - the ID of the section the student has been assigned to.
+
+In the future, the following headers may be made available:
+
+* "Choice" - an integer (1 - 6) indicating which choice of section the student received. If empty, the student was 
+allocated to a section not in their preferences. This can happen when a student does not list sufficient preferences or
+when a student's preferences are all illegal.
