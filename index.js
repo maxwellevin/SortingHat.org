@@ -201,7 +201,7 @@ window.onload = function () {
             // Reserve seats for male students
             for (let i = 0; i < numMaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: true,  // Check other parameters
+                    reserveGender: true,  // Check other parameters
                     gender: "M",  // Gender of the student to take this seat
                     reserveNonAthlete: true, // Reserve the seat for a non-athlete student
                     section: currentSection  // The section containing this seat
@@ -209,7 +209,7 @@ window.onload = function () {
             }
             for (let i = 0; i < numMaleSeats - numMaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: true,
+                    reserveGender: true,
                     gender: "M",
                     reserveNonAthlete: false,
                     section: currentSection
@@ -219,7 +219,7 @@ window.onload = function () {
             // Reserve seats for female students
             for (let i = 0; i < numFemaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: true,
+                    reserveGender: true,
                     gender: "F",
                     reserveNonAthlete: true,
                     section: currentSection
@@ -227,7 +227,7 @@ window.onload = function () {
             }
             for (let i = 0; i < numFemaleSeats - numFemaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: true,
+                    reserveGender: true,
                     gender: "F",
                     reserveNonAthlete: false,
                     section: currentSection
@@ -237,7 +237,7 @@ window.onload = function () {
             // Add seats not reserved by gender, but partially reserved for non-athletes
             for (let i = 0; i < numNonGenderedNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: true,
+                    reserveGender: false,
                     gender: "",
                     reserveNonAthlete: true,
                     section: currentSection
@@ -245,7 +245,7 @@ window.onload = function () {
             }
             for (let i = 0; i < numNonGenderedSeats - numNonGenderedNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: false,
+                    reserveGender: false,
                     gender: "",
                     reserveNonAthlete: false,
                     section: currentSection
@@ -263,63 +263,37 @@ window.onload = function () {
      * (represented by individual columns, stacked sequentially). */
     function buildCostMatrix(seats) {
         let matrix = [];
-
-        // Define parameters for the cost matrix based on user-defined configurations.
-        let alpha = 3.5;
-        let defaultWeight = Math.pow(alpha, 7);
-        let illegalWeight = Math.pow(alpha, 9);
-
-        // Loop through the students
-        Object.keys(studentsData).forEach(function (key, index) {
-            let student = studentsData[key];
+        Object.keys(studentsData).forEach(function (key, _) {  // Real students
             let arr = [];
-
-            // Loop through the seats
             for (let i = 0; i < seats.length; i++) {
-                let seat = seats[i];
-
-                // Get how desirable the seat is for the student
-                let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);  // TODO: make this use ID
-
-                // Determine if the student is not eligible or willing to take the seat
-                if (!prefNum || (seat.reserved && (student["Gender"] !== seat.gender))) {
-                    arr[i] = illegalWeight;
-                    continue;
-                }
-
-                // Set the cost according to the student's preferences.
-                arr[i] = Math.pow(alpha, prefNum);
+                arr.push(getStudentCostForSeat(studentsData[key], seats[i]));
             }
-
-            // Push the student's costs to the cost matrix
             matrix.push(arr);
         });
-
-        // Loop through the dummy students (Placeholders)
-        for (let i = 0; i < seats.length - Object.keys(studentsData).length; i++) {
+        for (let i = 0; i < seats.length - Object.keys(studentsData).length; i++) {  // Placeholder students
             let arr = [];
-
-            // Loop through the seats
             for (let j = 0; j < seats.length; j++) {
-                let seat = seats[j];
-
-                // If the seat is gendered, it should be reserved for actual students.
-                if (seat.reserved) {
-                    arr[j] = illegalWeight;
-                    continue;
-                }
-
-                // All other seats should have a cost greater than any potential seats for students.
-                arr[j] = defaultWeight;
+                arr.push(getStudentCostForSeat({}, seats[j]));
             }
-
-            // Push the dummy student's costs to the cost matrix
             matrix.push(arr);
         }
-
-        // Return the cost matrix
         return matrix;
     }
+
+
+    /** Returns the cost associated with assigning the given student to the given section. Encodes information about
+     * the maximum class size, minimum gender ratios, and maximum athlete ratio into the seats for each section*/
+    function getStudentCostForSeat(student, seat) {
+        if (seat.reserveGender || seat.reserveNonAthlete) {
+            if (student === {}) return illegalCost;
+            if (seat.reserveGender && seat.gender !== student["Gender"]) return illegalCost;
+            if (seat.reserveNonAthlete && student["Athlete"] != "") return illegalCost;  // broken
+        }
+        let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);
+        if (prefNum == 0) return defaultCost;
+        return Math.pow(costBase, prefNum);
+    }
+
 
 
     /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
