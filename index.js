@@ -42,6 +42,12 @@ window.onload = function () {
     let allocations = {};
 
 
+    /** Define parameters for the cost matrix based on user-defined configurations. */
+    let costBase = 3.5;
+    let defaultCost = Math.pow(costBase, 7);
+    let illegalCost = Math.pow(costBase, 9);
+
+
     /** Handles the student csv file uploading. */
     function handleStudentFile() {
         studentsHandled = false;
