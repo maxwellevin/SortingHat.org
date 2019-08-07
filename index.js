@@ -192,9 +192,9 @@ window.onload = function () {
             let numNonGenderedSeats = numSeats - numMaleSeats - numFemaleSeats;
 
             // Number of non-athletes seats to be allocated for male, female, non-gendered
-            let numMaleNonAthleteSeats = Math.round(numMaleSeats * getAthleteRatioInput());
-            let numFemaleNonAthleteSeats = Math.round(numFemaleSeats * getAthleteRatioInput());
-            let numNonGenderedNonAthleteSeats = Math.round(numNonGenderedSeats * getAthleteRatioInput());
+            let numMaleNonAthleteSeats = Math.round(numMaleSeats * (1 - getAthleteRatioInput()));
+            let numFemaleNonAthleteSeats = Math.round(numFemaleSeats * (1 - getAthleteRatioInput()));
+            let numNonGenderedNonAthleteSeats = Math.round(numNonGenderedSeats * (1 - getAthleteRatioInput()));
 
             // TODO #seatObj{} == #studentCap exactly.
 
