@@ -176,33 +176,72 @@ window.onload = function () {
         // Iterate through all of the sections (I hope this does so in order, otherwise we'll have issues later)
         Object.keys(sectionsData).forEach(function (key, _) {
             let currentSection = sectionsData[key];
+
+            // Total number of seats in this section
             let numSeats = currentSection["Student Cap"];
 
-            // Reserve a number of seats for males:
+            // Total number of seats to be allocated for male, female, non-gendered
             let numMaleSeats = Math.round(numSeats * getMaleRatioInput());
-            for (let i = 0; i < numMaleSeats; i++) {
+            let numFemaleSeats = Math.round(numSeats * getFemaleRatioInput());
+            let numNonGenderedSeats = numSeats - numMaleSeats - numFemaleSeats;
+
+            // Number of non-athletes seats to be allocated for male, female, non-gendered
+            let numMaleNonAthleteSeats = Math.round(numMaleSeats * getAthleteRatioInput());
+            let numFemaleNonAthleteSeats = Math.round(numFemaleSeats * getAthleteRatioInput());
+            let numNonGenderedNonAthleteSeats = Math.round(numNonGenderedSeats * getAthleteRatioInput());
+
+            // TODO #seatObj{} == #studentCap exactly.
+
+            // Reserve seats for male students
+            for (let i = 0; i < numMaleNonAthleteSeats; i++) {
+                seatsArray.push({
+                    reserved: true,  // Check other parameters
+                    gender: "M",  // Gender of the student to take this seat
+                    reserveNonAthlete: true, // Reserve the seat for a non-athlete student
+                    section: currentSection  // The section containing this seat
+                });
+            }
+            for (let i = 0; i < numMaleSeats - numMaleNonAthleteSeats; i++) {
                 seatsArray.push({
                     reserved: true,
                     gender: "M",
+                    reserveNonAthlete: false,
                     section: currentSection
                 });
             }
 
-            // Reserve a number of seats for females
-            let numFemaleSeats = Math.round(numSeats * getFemaleRatioInput());
-            for (let i = 0; i < numFemaleSeats; i++) {
+            // Reserve seats for female students
+            for (let i = 0; i < numFemaleNonAthleteSeats; i++) {
                 seatsArray.push({
                     reserved: true,
                     gender: "F",
+                    reserveNonAthlete: true,
+                    section: currentSection
+                });
+            }
+            for (let i = 0; i < numFemaleSeats - numFemaleNonAthleteSeats; i++) {
+                seatsArray.push({
+                    reserved: true,
+                    gender: "F",
+                    reserveNonAthlete: false,
                     section: currentSection
                 });
             }
 
-            // Push the final seats to the seatsArray
-            for (let i = 0; i < numSeats - numMaleSeats - numFemaleSeats; i++) {
+            // Add seats not reserved by gender, but partially reserved for non-athletes
+            for (let i = 0; i < numNonGenderedNonAthleteSeats; i++) {
+                seatsArray.push({
+                    reserved: true,
+                    gender: "",
+                    reserveNonAthlete: true,
+                    section: currentSection
+                });
+            }
+            for (let i = 0; i < numNonGenderedSeats - numNonGenderedNonAthleteSeats; i++) {
                 seatsArray.push({
                     reserved: false,
                     gender: "",
+                    reserveNonAthlete: false,
                     section: currentSection
                 });
             }
