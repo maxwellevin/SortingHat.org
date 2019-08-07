@@ -1,8 +1,5 @@
 "use strict";
 
-// TODO: Generate a report of the program's performance
-// TODO: Activate the save button
-
 window.onload = function () {
 
     /** Add event listeners for actionable buttons */
@@ -58,7 +55,6 @@ window.onload = function () {
             header: true,
             step: function (results) {
                 if (results.errors.length > 0) {
-                    // TODO: Better handle errors
                     console.log("ERRORS:", results.errors);
                     alert("An error occurred while handling the student csv file: " + results.errors);
                     return;
@@ -86,7 +82,6 @@ window.onload = function () {
             dynamicTyping: true,
             step: function (results) {
                 if (results.errors.length > 0) {
-                    // TODO: Better handle errors
                     console.log("ERRORS:", results.errors);
                     alert("An error occurred while handling the sections csv file: " + results.errors);
                     return;
@@ -133,7 +128,6 @@ window.onload = function () {
         // Combine the algorithm's allocations with previous allocations
         allocations = combineAllocations(munkres, preassignedStudents);
 
-        // TODO: Generate a report of the gender/athlete balances, smallest classes, most popular class choice, etc.
         let report = createReport();
         printReport(report);
 
@@ -195,8 +189,6 @@ window.onload = function () {
             let numMaleNonAthleteSeats = Math.round(numMaleSeats * (1 - getAthleteRatioInput()));
             let numFemaleNonAthleteSeats = Math.round(numFemaleSeats * (1 - getAthleteRatioInput()));
             let numNonGenderedNonAthleteSeats = Math.round(numNonGenderedSeats * (1 - getAthleteRatioInput()));
-
-            // TODO #seatObj{} == #studentCap exactly.
 
             // Reserve seats for male students
             for (let i = 0; i < numMaleNonAthleteSeats; i++) {
@@ -299,7 +291,7 @@ window.onload = function () {
     /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
      * section is not in the student's preferences, then the function returns false. Note: students are allowed six
      * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
-    function getPreferenceNumber(student, sectionID) {  // TODO: account for illegal sections
+    function getPreferenceNumber(student, sectionID) {
         for (let i = 1; i < 7; i++) {
             if (student["Choice " + i] === sectionID) {
                 return i;
