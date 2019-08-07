@@ -325,13 +325,13 @@ window.onload = function () {
     /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
      * section is not in the student's preferences, then the function returns false. Note: students are allowed six
      * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
-    function getPreferenceNumber(student, sectionID) {
+    function getPreferenceNumber(student, sectionID) {  // TODO: account for illegal sections
         for (let i = 1; i < 7; i++) {
             if (student["Choice " + i] === sectionID) {
                 return i;
             }
         }
-        return false;
+        return 0;  // section not in student's preferences
     }
 
 
