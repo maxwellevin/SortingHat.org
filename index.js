@@ -1,9 +1,16 @@
-"use strict";
+// "use strict";
 
 // TODO: Generate a report of the program's performance
 // TODO: Activate the save button
 
 window.onload = function () {
+
+
+    /* Statistics for report. */
+    var numAthletes = 0;
+    var numMales = 0;
+
+    document.getElementById("run").disabled = false; // temporary
 
     /** Add event listeners for actionable buttons */
     document.getElementById("upload_student").onchange = handleStudentFile;
@@ -59,6 +66,12 @@ window.onload = function () {
                 }
                 let student = results.data[0];
                 arr[student["ID"]] = student;
+                if (student["Gender"] == "M") {
+                    numMales++;
+                }
+                if (student["Athlete"] == "Y") {
+                    numAthletes++;
+                }
             },
             complete: function (results, file) {
                 initialStudentsData = arr;
@@ -134,6 +147,8 @@ window.onload = function () {
         // TODO: Generate a report of the gender/athlete balances, smallest classes, most popular class choice, etc.
         let report = createReport();
 
+        printReport(report);
+        
         document.getElementById("run").disabled = false;
         document.getElementById("save_as").disabled = false;
     }
@@ -373,16 +388,69 @@ window.onload = function () {
         }
 
 
-
         console.log(m_pref);
         console.log(a_pref);
+       
+        report["m_pref"] = m_pref;
+        report["a_pref"] = a_pref;
+        
         return report;
     }
 
 
     /** Takes a report object and makes it look nice in html. */
     function printReport(report) {
+        // population: Statistics about the student population: number of students, number of each gender, number of athletes, etc. -->
+        // placements: Statistics about the placements: number of students placed (by SortingHat), number/percent in each choice.  
+        // warnings: Alerts user about improper inputs or program inadequacies. Students listing a previous professor, sections that
+        // failed to meet the gender or athlete ratio requirements would be listed here.
+ /*
 
+
+    
+
+        % athletes that got blah...
+        % males that got blah
+        % females that got blah
+        % male athletes
+        % female athletes
+
+        running time 
+            
+        total students: Objects.keys(initialStudentsData).length
+        number of each gender: .... 
+        num athletes 
+
+
+        */
+
+       
+
+        document.getElementById("Report").hidden = false;
+
+        var population = document.getElementById("Population");
+        var placements = document.getElementById("Placements");
+        var warnings = document.getElementById("Warnings");
+        
+
+        
+        warnings.hidden = false;
+
+
+        population.innerHTML = populationStats();
+
+        for (let i = 0; i < 7; i++) {
+            document.getElementById("percent" + i).innerHTML = report["m_pref"][i].toFixed(2);
+        }
+       
+       console.log();
+
+    }
+
+    function populationStats() {
+        return "There are " + Object.keys(initialStudentsData).length + " students in total. " + 
+            numMales + " male students and " + (Object.keys(initialStudentsData).length - numMales) + " female students. " + 
+            numAthletes + " athletes.";
     }
 
 

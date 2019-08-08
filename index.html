@@ -87,14 +87,37 @@ duplicate rows, illegal values/formatting, mismatched student and section csv fi
 
 <!--Container for reporting statistics to the user. -->
 <div id="Report" hidden>
+    <h1> Report </h1>
     <!--Statistics about the student population: number of students, number of each gender, number of athletes, etc. -->
     <div id="Population">
-
+        <!-- There are <span id="numStudents"></span> total. <span id="numMale"></span> males. <span id></span> -->
     </div>
 
     <!--Statistics about the placements: number of students placed (by SortingHat), number/percent in each choice. -->
     <div id="Placements">
-
+        <ul>
+            <li>
+                <span id="percent0"></span> % of students got none of their choices
+            </li>    
+            <li>
+                <span id="percent1"></span> % of students got their first choice
+            </li>
+            <li>
+                <span id="percent2"></span> % of students got their second choice
+            </li>    
+            <li>
+                <span id="percent3"></span> % of students got their third choice
+            </li>
+            <li>
+                <span id="percent4"></span> % of students got their fourth
+            </li>    
+            <li>
+                <span id="percent5"></span> % of students got their fifth choice
+            </li>    
+            <li>
+                <span id="percent6"></span> % of students got their sixth choice
+            </li>    
+        </ul>
     </div>
 
     <!--Alerts user about improper inputs or program inadequacies. Students listing a previous professor, sections that
