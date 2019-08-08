@@ -401,11 +401,10 @@ window.onload = function () {
         // placements: Statistics about the placements: number of students placed (by SortingHat), number/percent in each choice.  
         // warnings: Alerts user about improper inputs or program inadequacies. Students listing a previous professor, sections that
         // failed to meet the gender or athlete ratio requirements would be listed here.
- /*
-
-
     
 
+
+    /*
         % athletes that got blah...
         % males that got blah
         % females that got blah
@@ -413,13 +412,7 @@ window.onload = function () {
         % female athletes
 
         running time 
-            
-        total students: Objects.keys(initialStudentsData).length
-        number of each gender: .... 
-        num athletes 
-
-
-        */
+     */
 
        
 
@@ -449,6 +442,7 @@ window.onload = function () {
             numMales + " male students and " + (Object.keys(initialStudentsData).length - numMales) + " female students. " + 
             numAthletes + " athletes.";
     }
+
 
 
     /** Saves the results of the program upon a successful run of the algorithm. */
