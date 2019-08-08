@@ -418,26 +418,37 @@ window.onload = function () {
             running time
         */
 
-        choiceDistributionChart(report.a_pref.map(x => x.toFixed(1)));
-        document.getElementById("Report").hidden = false;
-
-        var population = document.getElementById("Population");
-        var placements = document.getElementById("Placements");
-        var warnings = document.getElementById("Warnings");
-        
-
-        
-        warnings.hidden = false;
-
-
+        let population = document.getElementById("Population");
         population.innerHTML = populationStats();
 
-        for (let i = 0; i < 7; i++) {
-            document.getElementById("percent" + i).innerHTML = report["m_pref"][i].toFixed(2);
-        }
-       
-       console.log();
 
+        let placements = document.getElementById("Placements");
+        let chartCanvas = document.getElementById('myChart').getContext('2d');
+        let simplePlacementDist = report.a_pref.map(x => x.toFixed(1));
+        let backgroundColors = [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+            'pink'
+        ];
+        let borderColors = [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'red'
+        ];
+        choiceDistributionChart(chartCanvas, simplePlacementDist, backgroundColors, borderColors);
+
+        let warnings = document.getElementById("Warnings");
+        // warnings.hidden = false;
+
+        document.getElementById("Report").hidden = false;
     }
 
     function populationStats() {
@@ -446,8 +457,8 @@ window.onload = function () {
             numAthletes + " athletes.";
     }
 
-    function choiceDistributionChart(distribution) {
-        var ctx = document.getElementById('myChart').getContext('2d');
+    function choiceDistributionChart(chartCanvas, distribution, backgroundColors, borderColors) {
+        var ctx = chartCanvas;
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -455,24 +466,8 @@ window.onload = function () {
                 datasets: [{
                     label: 'Breakdown of student allocation by student preference',
                     data: distribution,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)',
-                        'pink'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)',
-                        'red'
-                    ],
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
                     borderWidth: 1
                 }]
             },
