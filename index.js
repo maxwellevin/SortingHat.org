@@ -1,8 +1,5 @@
 // "use strict";
 
-// TODO: Generate a report of the program's performance
-// TODO: Activate the save button
-
 window.onload = function () {
 
 
@@ -49,6 +46,12 @@ window.onload = function () {
     let allocations = {};
 
 
+    /** Define parameters for the cost matrix based on user-defined configurations. */
+    let costBase = 3.5;
+    let defaultCost = Math.pow(costBase, 7);
+    let illegalCost = Math.pow(costBase, 9);
+
+
     /** Handles the student csv file uploading. */
     function handleStudentFile() {
         studentsHandled = false;
@@ -59,7 +62,6 @@ window.onload = function () {
             header: true,
             step: function (results) {
                 if (results.errors.length > 0) {
-                    // TODO: Better handle errors
                     console.log("ERRORS:", results.errors);
                     alert("An error occurred while handling the student csv file: " + results.errors);
                     return;
@@ -93,7 +95,6 @@ window.onload = function () {
             dynamicTyping: true,
             step: function (results) {
                 if (results.errors.length > 0) {
-                    // TODO: Better handle errors
                     console.log("ERRORS:", results.errors);
                     alert("An error occurred while handling the sections csv file: " + results.errors);
                     return;
@@ -140,7 +141,6 @@ window.onload = function () {
         // Combine the algorithm's allocations with previous allocations
         allocations = combineAllocations(munkres, preassignedStudents);
 
-        // TODO: Generate a report of the gender/athlete balances, smallest classes, most popular class choice, etc.
         let report = createReport();
         printReport(report);
 
@@ -191,33 +191,70 @@ window.onload = function () {
         // Iterate through all of the sections (I hope this does so in order, otherwise we'll have issues later)
         Object.keys(sectionsData).forEach(function (key, _) {
             let currentSection = sectionsData[key];
+
+            // Total number of seats in this section
             let numSeats = currentSection["Student Cap"];
 
-            // Reserve a number of seats for males:
+            // Total number of seats to be allocated for male, female, non-gendered
             let numMaleSeats = Math.round(numSeats * getMaleRatioInput());
-            for (let i = 0; i < numMaleSeats; i++) {
-                seatsArray.push({
-                    reserved: true,
-                    gender: "M",
-                    section: currentSection
-                });
-            }
-
-            // Reserve a number of seats for females
             let numFemaleSeats = Math.round(numSeats * getFemaleRatioInput());
-            for (let i = 0; i < numFemaleSeats; i++) {
+            let numNonGenderedSeats = numSeats - numMaleSeats - numFemaleSeats;
+
+            // Number of non-athletes seats to be allocated for male, female, non-gendered
+            let numMaleNonAthleteSeats = Math.round(numMaleSeats * (1 - getAthleteRatioInput()));
+            let numFemaleNonAthleteSeats = Math.round(numFemaleSeats * (1 - getAthleteRatioInput()));
+            let numNonGenderedNonAthleteSeats = Math.round(numNonGenderedSeats * (1 - getAthleteRatioInput()));
+
+            // Reserve seats for male students
+            for (let i = 0; i < numMaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: true,
-                    gender: "F",
+                    reserveGender: true,  // Check other parameters
+                    gender: "M",  // Gender of the student to take this seat
+                    reserveNonAthlete: true, // Reserve the seat for a non-athlete student
+                    section: currentSection  // The section containing this seat
+                });
+            }
+            for (let i = 0; i < numMaleSeats - numMaleNonAthleteSeats; i++) {
+                seatsArray.push({
+                    reserveGender: true,
+                    gender: "M",
+                    reserveNonAthlete: false,
                     section: currentSection
                 });
             }
 
-            // Push the final seats to the seatsArray
-            for (let i = 0; i < numSeats - numMaleSeats - numFemaleSeats; i++) {
+            // Reserve seats for female students
+            for (let i = 0; i < numFemaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserved: false,
+                    reserveGender: true,
+                    gender: "F",
+                    reserveNonAthlete: true,
+                    section: currentSection
+                });
+            }
+            for (let i = 0; i < numFemaleSeats - numFemaleNonAthleteSeats; i++) {
+                seatsArray.push({
+                    reserveGender: true,
+                    gender: "F",
+                    reserveNonAthlete: false,
+                    section: currentSection
+                });
+            }
+
+            // Add seats not reserved by gender, but partially reserved for non-athletes
+            for (let i = 0; i < numNonGenderedNonAthleteSeats; i++) {
+                seatsArray.push({
+                    reserveGender: false,
                     gender: "",
+                    reserveNonAthlete: true,
+                    section: currentSection
+                });
+            }
+            for (let i = 0; i < numNonGenderedSeats - numNonGenderedNonAthleteSeats; i++) {
+                seatsArray.push({
+                    reserveGender: false,
+                    gender: "",
+                    reserveNonAthlete: false,
                     section: currentSection
                 });
             }
@@ -233,63 +270,37 @@ window.onload = function () {
      * (represented by individual columns, stacked sequentially). */
     function buildCostMatrix(seats) {
         let matrix = [];
-
-        // Define parameters for the cost matrix based on user-defined configurations.
-        let alpha = 3.5;
-        let defaultWeight = Math.pow(alpha, 7);
-        let illegalWeight = Math.pow(alpha, 9);
-
-        // Loop through the students
-        Object.keys(studentsData).forEach(function (key, index) {
-            let student = studentsData[key];
+        Object.keys(studentsData).forEach(function (key, _) {  // Real students
             let arr = [];
-
-            // Loop through the seats
             for (let i = 0; i < seats.length; i++) {
-                let seat = seats[i];
-
-                // Get how desirable the seat is for the student
-                let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);  // TODO: make this use ID
-
-                // Determine if the student is not eligible or willing to take the seat
-                if (!prefNum || (seat.reserved && (student["Gender"] !== seat.gender))) {
-                    arr[i] = illegalWeight;
-                    continue;
-                }
-
-                // Set the cost according to the student's preferences.
-                arr[i] = Math.pow(alpha, prefNum);
+                arr.push(getStudentCostForSeat(studentsData[key], seats[i]));
             }
-
-            // Push the student's costs to the cost matrix
             matrix.push(arr);
         });
-
-        // Loop through the dummy students (Placeholders)
-        for (let i = 0; i < seats.length - Object.keys(studentsData).length; i++) {
+        for (let i = 0; i < seats.length - Object.keys(studentsData).length; i++) {  // Placeholder students
             let arr = [];
-
-            // Loop through the seats
             for (let j = 0; j < seats.length; j++) {
-                let seat = seats[j];
-
-                // If the seat is gendered, it should be reserved for actual students.
-                if (seat.reserved) {
-                    arr[j] = illegalWeight;
-                    continue;
-                }
-
-                // All other seats should have a cost greater than any potential seats for students.
-                arr[j] = defaultWeight;
+                arr.push(getStudentCostForSeat({}, seats[j]));
             }
-
-            // Push the dummy student's costs to the cost matrix
             matrix.push(arr);
         }
-
-        // Return the cost matrix
         return matrix;
     }
+
+
+    /** Returns the cost associated with assigning the given student to the given section. Encodes information about
+     * the maximum class size, minimum gender ratios, and maximum athlete ratio into the seats for each section*/
+    function getStudentCostForSeat(student, seat) {
+        if (seat.reserveGender || seat.reserveNonAthlete) {
+            if (student === {}) return illegalCost;
+            if (seat.reserveGender && seat.gender !== student["Gender"]) return illegalCost;
+            if (seat.reserveNonAthlete && student["Athlete"] != "") return illegalCost;  // broken
+        }
+        let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);
+        if (prefNum == 0) return defaultCost;
+        return Math.pow(costBase, prefNum);
+    }
+
 
 
     /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
@@ -301,7 +312,7 @@ window.onload = function () {
                 return i;
             }
         }
-        return false;
+        return 0;  // section not in student's preferences
     }
 
 
