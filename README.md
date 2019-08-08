@@ -43,11 +43,10 @@ file must have the following headers (order does not matter):
 Presently no additional headers are supported. 
 
 
-### Step 3: Set Maximum Gender Ratios
+### Step 3: Set Minimum Gender Ratios
 
 SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such 
-aspect is the maximum gender ratio in any section. By moving the slider users can set the maximum percentage of male or 
-female students allowed in a section. 
+aspect is the ability to set the minimum gender ratio for males/females in any section. By moving the sliders users can set the minimum percentage of males or females that each section should be composed of. 
 
 ### Step 4: Set Maximum Athlete Ratio
 

@@ -113,11 +113,7 @@ window.onload = function () {
     /** Toggles the state of the 'run' button based on the states of studentsHandled and sectionsHandled. */
     function handleRunButton() {
         document.getElementById("save_as").disabled = true;
-        if (studentsHandled && sectionsHandled) {
-            document.getElementById("run").disabled = false;
-        } else {
-            document.getElementById("run").disabled = true;
-        }
+        document.getElementById("run").disabled = !(studentsHandled && sectionsHandled);
     }
 
 
@@ -146,6 +142,7 @@ window.onload = function () {
 
         // TODO: Generate a report of the gender/athlete balances, smallest classes, most popular class choice, etc.
         let report = createReport();
+        printReport(report);
 
         printReport(report);
         
@@ -197,7 +194,7 @@ window.onload = function () {
             let numSeats = currentSection["Student Cap"];
 
             // Reserve a number of seats for males:
-            let numMaleSeats = Math.round(numSeats * (1 - getMaleRatioInput()));
+            let numMaleSeats = Math.round(numSeats * getMaleRatioInput());
             for (let i = 0; i < numMaleSeats; i++) {
                 seatsArray.push({
                     reserved: true,
@@ -207,7 +204,7 @@ window.onload = function () {
             }
 
             // Reserve a number of seats for females
-            let numFemaleSeats = Math.round(numSeats * (1 - getFemaleRatioInput()));
+            let numFemaleSeats = Math.round(numSeats * getFemaleRatioInput());
             for (let i = 0; i < numFemaleSeats; i++) {
                 seatsArray.push({
                     reserved: true,
