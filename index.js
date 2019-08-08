@@ -2,19 +2,15 @@
 
 window.onload = function () {
 
-
-    /* Statistics for report. */
-    var numAthletes = 0;
-    var numMales = 0;
-
-    document.getElementById("run").disabled = false; // temporary
-
     /** Add event listeners for actionable buttons */
     document.getElementById("upload_student").onchange = handleStudentFile;
     document.getElementById("upload_section").onchange = handleSectionFile;
     document.getElementById("run").onclick = runProgram;
     document.getElementById("save_as").onclick = saveResults;
 
+    /** Statistics for report. */
+    let numAthletes = 0;
+    let numMales = 0;
 
     /** Boolean values to track handling of students and sections. */
     let studentsHandled = false;
@@ -412,21 +408,17 @@ window.onload = function () {
         // placements: Statistics about the placements: number of students placed (by SortingHat), number/percent in each choice.  
         // warnings: Alerts user about improper inputs or program inadequacies. Students listing a previous professor, sections that
         // failed to meet the gender or athlete ratio requirements would be listed here.
-    
+        /*
+            % athletes that got blah...
+            % males that got blah
+            % females that got blah
+            % male athletes
+            % female athletes
 
+            running time
+        */
 
-    /*
-        % athletes that got blah...
-        % males that got blah
-        % females that got blah
-        % male athletes
-        % female athletes
-
-        running time 
-     */
-
-       
-
+        choiceDistributionChart(report.a_pref.map(x => x.toFixed(1)));
         document.getElementById("Report").hidden = false;
 
         var population = document.getElementById("Population");
@@ -454,7 +446,47 @@ window.onload = function () {
             numAthletes + " athletes.";
     }
 
-
+    function choiceDistributionChart(distribution) {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['0', '1', '2', '3', '4', '5', '6'],
+                datasets: [{
+                    label: 'Breakdown of student allocation by student preference',
+                    data: distribution,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'pink'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'red'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    }
 
     /** Saves the results of the program upon a successful run of the algorithm. */
     function saveResults() {
