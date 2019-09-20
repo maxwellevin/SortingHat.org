@@ -9,6 +9,20 @@ window.onload = function () {
     document.getElementById("save_as").onclick = saveResults;
 
 
+    /** Column headers that must be present in the csv files */
+    let requiredStudentHeaders = new Set(["ID", "Gender", "Athlete", "Choice 1"]);
+    let requiredSectionHeaders = new Set(["Core Section #", "Professor", "Student Cap"]);
+
+
+    /** Valid column headers */
+    let validStudentHeaders = new Set(["Placement", "ID", "Gender", "Athlete", "Sport", "Previous Instructor", "Illegal Sections", "Choice 1", "Choice 2", "Choice 3", "Choice 4", "Choice 5", "Choice 6"]);
+    let validSectionHeaders = new Set(["Core Section #", "Professor", "Student Cap"]);
+
+
+    /** Column headers that are valid and present in the csv files. */
+    let activeStudentHeaders = new Set();
+    let activeSectionHeaders = new Set();
+
     /** Boolean values to track handling of students and sections. */
     let studentsHandled = false;
     let sectionsHandled = false;
