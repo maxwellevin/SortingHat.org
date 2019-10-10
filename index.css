@@ -42,3 +42,7 @@ button {
     margin: auto;
     position: relative;
 }
+
+.report-text {
+    font-size: 10pt;
+}

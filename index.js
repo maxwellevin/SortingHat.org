@@ -19,6 +19,8 @@ window.onload = function () {
             numGenderErrors: 0,
             numAthletes: 0,
             numPreferenceErrors: 0,
+            studentIDs: new Set(),
+            duplicateIDs: new Set(), // TODO
         };
     }
 
@@ -87,6 +89,7 @@ window.onload = function () {
                 studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
                 studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
                 studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+                (studentStats.studentIDs.has(student["ID"])) ? studentStats.duplicateIDs.add(student["ID"]) : studentStats.studentIDs.add(student["ID"]);
             },
             complete: function (results, file) {
                 addStatsToElement(document.getElementById("students_container"), getStudentStatsString());
@@ -377,6 +380,7 @@ window.onload = function () {
 
     function addStatsToElement(element, statsString) {
         let stats = document.createElement("p");
+        stats.className = "report-text";
         stats.innerHTML = statsString;
         element.appendChild(stats);
     }
@@ -475,7 +479,8 @@ window.onload = function () {
         return "There are " + studentStats.numStudents + " students in total, " + 
             studentStats.numMales + " male students and " + studentStats.numFemales + " female students. " + 
             "Of those students " + studentStats.numAthletes + " are athletes " + 
-            "and " + studentStats.numPreAssigned + " have already been assigned sections.";
+            "and " + studentStats.numPreAssigned + " have already been assigned sections." + 
+            ((studentStats.duplicateIDs.size > 0) ? "<br><br>The students with IDs " + Array.from(studentStats.duplicateIDs).join(', ') + " are present more than once. Please correct this before proceeding." : "");
     }
 
 
