@@ -19,8 +19,8 @@ window.onload = function () {
             numGenderErrors: 0,
             numAthletes: 0,
             numPreferenceErrors: 0,
-            studentIDs: new Set(),
-            duplicateIDs: new Set(), // TODO
+            IDs: new Set(),
+            duplicateIDs: new Set(),
         };
     }
 
@@ -31,6 +31,8 @@ window.onload = function () {
             numSections: 0,
             numSeats: 0,
             professors: new Set(),
+            IDs: new Set(),
+            duplicateIDs: new Set(),
         };
     }
 
@@ -84,14 +86,19 @@ window.onload = function () {
                 obj[student["ID"]] = student;
                 
                 // Update statistics
-                studentStats.numStudents += 1;
-                studentStats.numPreAssigned += (student["Placement"] != "") ? 1 : 0;
-                studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
-                studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
-                studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
-                (studentStats.studentIDs.has(student["ID"])) ? studentStats.duplicateIDs.add(student["ID"]) : studentStats.studentIDs.add(student["ID"]);
+                if (studentStats.IDs.has(student["ID"])) {
+                    studentStats.duplicateIDs.add(student["ID"]);
+                }
+                else {
+                    studentStats.IDs.add(student["ID"]);
+                    studentStats.numPreAssigned += (student["Placement"] != "") ? 1 : 0;
+                    studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
+                    studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
+                    studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+                }
             },
             complete: function (results, file) {
+                studentStats.numStudents = studentStats.IDs.size;
                 addStatsToElement(document.getElementById("students_container"), getStudentStatsString());
                 initialStudentsData = obj;
                 studentsHandled = true;
@@ -122,9 +129,15 @@ window.onload = function () {
                 obj[section["Core Section #"]] = section;
 
                 // Track section statistics
-                sectionStats.numSections += 1;
-                sectionStats.numSeats += section["Student Cap"];
-                sectionStats.professors.add(section["Professor"]);
+                if (sectionStats.IDs.has(section["Core Section #"])) {
+                    sectionStats.duplicateIDs,add(section["Core Section #"]);
+                }
+                else {
+                    sectionStats.IDs.add(section["Core Section #"]);
+                    sectionStats.numSections += 1;
+                    sectionStats.numSeats += section["Student Cap"];
+                    sectionStats.professors.add(section["Professor"]);
+                }
             },
             complete: function (results, file) {
                 addStatsToElement(document.getElementById("sections_container"), getSectionStatsString());
@@ -386,7 +399,7 @@ window.onload = function () {
     }
 
 
-    /** Computes a number of different statistics about the allocated students. Returns an object. */
+    /** Compiles a number of statistics about the allocations into an object. */
     function createReport() {
         let report = {};
 
@@ -475,6 +488,7 @@ window.onload = function () {
         document.getElementById("Report").hidden = false;
     }
 
+    /** Returns a string with info from the studentStats object. */
     function getStudentStatsString() {
         return "There are " + studentStats.numStudents + " students in total, " + 
             studentStats.numMales + " male students and " + studentStats.numFemales + " female students. " + 
@@ -484,12 +498,15 @@ window.onload = function () {
     }
 
 
+    /** Returns a string with info from the sectionStats object. */
     function getSectionStatsString() {
         return "There are " + sectionStats.numSections + " sections " +
         "taught by " + sectionStats.professors.size + " professors. " +
-        "There are " + sectionStats.numSeats + " total seats available.";
+        "There are " + sectionStats.numSeats + " total seats available." +
+        ((sectionStats.duplicateIDs.size > 0) ? "<br><br>The sections with IDs " + Array.from(sectionStats.duplicateIDs).join(', ') + " are present more than once. Please correct this before proceeding." : "");
     }
 
+    /** Populates the given canvas with the given distribution, background colors, and border colors. */
     function choiceDistributionChart(chartCanvas, distribution, backgroundColors, borderColors) {
         var ctx = chartCanvas;
         var myChart = new Chart(ctx, {
