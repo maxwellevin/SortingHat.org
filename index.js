@@ -440,7 +440,6 @@ window.onload = function () {
         */
 
         let population = document.getElementById("Population");
-        population.innerHTML = populationStats();
 
 
         let placements = document.getElementById("Placements");
