@@ -89,6 +89,7 @@ window.onload = function () {
                 studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
             },
             complete: function (results, file) {
+                addStatsToElement(document.getElementById("students_container"), getStudentStatsString());
                 initialStudentsData = obj;
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
@@ -123,6 +124,7 @@ window.onload = function () {
                 sectionStats.professors.add(section["Professor"]);
             },
             complete: function (results, file) {
+                addStatsToElement(document.getElementById("sections_container"), getSectionStatsString());
                 sectionsHandled = true;
                 initialSectionsData = obj;
                 handleRunButton();  // checks to see if students are handled too
@@ -373,6 +375,13 @@ window.onload = function () {
     }
 
 
+    function addStatsToElement(element, statsString) {
+        let stats = document.createElement("p");
+        stats.innerHTML = statsString;
+        element.appendChild(stats);
+    }
+
+
     /** Computes a number of different statistics about the allocated students. Returns an object. */
     function createReport() {
         let report = {};
@@ -463,11 +472,18 @@ window.onload = function () {
         document.getElementById("Report").hidden = false;
     }
 
-    function populationStats() {
+    function getStudentStatsString() {
         return "There are " + studentStats.numStudents + " students in total, " + 
             studentStats.numMales + " male students and " + studentStats.numFemales + " female students. " + 
             "Of those students " + studentStats.numAthletes + " are athletes " + 
-            "and " + studentStats.numPreAssigned + " were assigned sections before SortingHat was run.";
+            "and " + studentStats.numPreAssigned + " have already been assigned sections.";
+    }
+
+
+    function getSectionStatsString() {
+        return "There are " + sectionStats.numSections + " sections " +
+        "taught by " + sectionStats.professors.size + " professors. " +
+        "There are " + sectionStats.numSeats + " total seats available.";
     }
 
     function choiceDistributionChart(chartCanvas, distribution, backgroundColors, borderColors) {
