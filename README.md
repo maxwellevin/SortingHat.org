@@ -4,7 +4,17 @@ Sort students into classes with this cutting edge interface.
 
 ## Instructions
 
-### Step 1: Upload the Students File
+### Step 1: Upload the Sections File
+
+Click the "Choose file" button under the sections tab to upload a csv containing information about sections. This file must have the following headers (order does not matter):
+
+* "Core Section #" - the unique identifier for the given section. 
+* "Professor" - the primary instructor for the section.
+* "Student Cap" - the number of students allowed to take the class. 
+
+Presently no additional headers are supported. 
+
+### Step 2: Upload the Students File
 
 Click the "Choose file" button under the students tab to upload a csv containing information about students. This file must have the following headers (order does not matter):
 
@@ -22,18 +32,6 @@ Additionally, the following headers are also supported:
 this includes all the courses the instructor is teaching by default. If additional courses are specified,these are added to the student's list of illegal course allocations. It is highly unlikely that a student will be placed in an illegal section.
 
 Other headers and columns are permitted to be in the student csv file, but the program will not be able to use data from columns that have headers named something other than what is specified above.
-
-
-### Step 2: Upload the Sections File
-
-Click the "Choose file" button under the sections tab to upload a csv containing information about sections. This file must have the following headers (order does not matter):
-
-* "Core Section #" - the unique identifier for the given section. 
-* "Professor" - the primary instructor for the section.
-* "Student Cap" - the number of students allowed to take the class. 
-
-Presently no additional headers are supported. 
-
 
 ### Step 3: Set Minimum Gender Ratios
 
