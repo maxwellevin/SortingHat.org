@@ -69,6 +69,8 @@
             <fieldset>
                 <legend>Run the Program</legend>
                 <button id="run" disabled>Run</button>
+                <canvas id="allocations_overall_canvas" width=3 height=1></canvas>
+                <canvas id="allocations_sortinghat_canvas" width=3 height=1></canvas>
             </fieldset>
         </li>
         <li id="download_container">
@@ -79,34 +81,5 @@
         </li>
     </ol>
 </div>
-
-<!--Container for reporting any program-stopping runtime or configuration errors to the user. Improper csv headers,
-duplicate rows, illegal values/formatting, mismatched student and section csv files, etc. would be listed here. -->
-<div id="Errors" hidden>
-
-</div>
-
-<!--Container for reporting statistics to the user. -->
-<div id="Report" hidden>
-    <h1> Report </h1>
-    <!--Statistics about the student population: number of students, number of each gender, number of athletes, etc. -->
-    <div id="Population">
-        <!-- There are <span id="numStudents"></span> total. <span id="numMale"></span> males. <span id></span> -->
-    </div>
-
-    <!--Statistics about the placements: number of students placed (by SortingHat), number/percent in each choice. -->
-    <div id="Placements">
-        <canvas id="myChart" width="3" height="1"></canvas>
-    </div>
-
-    <!--Alerts user about improper inputs or program inadequacies. Students listing a previous professor, sections that
-    failed to meet the gender or athlete ratio requirements would be listed here.-->
-    <div id="Warnings" hidden>
-
-    </div>
-</div>
-
-
-
 </body>
 </html>

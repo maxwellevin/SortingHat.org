@@ -19,6 +19,7 @@ window.onload = function () {
             numGenderErrors: 0,
             numAthletes: 0,
             numPreferenceErrors: 0,
+            errorIDs: new Set(),
             IDs: new Set(),
             duplicateIDs: new Set(),
         };
@@ -95,7 +96,10 @@ window.onload = function () {
                     studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
                     studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
                     studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
-                    studentStats.numPreferenceErrors += (adjustStudentPrefErrors(student)) ? 1 : 0;
+                    if (adjustStudentPrefErrors(student)) {
+                        studentStats.numPreferenceErrors++;
+                        studentStats.errorIDs.add(student["ID"]);
+                    }
                 }
             },
             complete: function (results, file) {
@@ -185,7 +189,7 @@ window.onload = function () {
         allocations = combineAllocations(munkres, preassignedStudents);
 
         let report = createReport();
-        printReport(report);
+        displayReport(report);
         
         document.getElementById("run").disabled = false;
         document.getElementById("save_as").disabled = false;
@@ -365,7 +369,7 @@ window.onload = function () {
 
 
     /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
-     * section is not in the student's preferences, then the function returns false. Note: students are allowed six
+     * section is not in the student's preferences, then the function returns 0. Note: students are allowed six
      * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
     function getPreferenceNumber(student, sectionID) {
         for (let i = 1; i < 7; i++) {
@@ -433,6 +437,16 @@ window.onload = function () {
         return b;
     }
 
+    /**  */
+    function calculateAllocationsPerformance(allocations, dataSource) {
+        let data = [0, 0, 0, 0, 0, 0, 0];  // 0: None, 1-6: preference
+        Object.keys(allocations).forEach(function (studentID, _) {
+            let student = dataSource[studentID];
+            let sectionID = allocations[studentID];
+            data[getPreferenceNumber(student, sectionID)]++;
+        });
+        return data;
+    }
 
     /** Adds the string to the element in a <p> tag and adds the 'report-text' class for styling. */
     function addStatsToElement(element, statsString) {
@@ -447,97 +461,30 @@ window.onload = function () {
     function createReport() {
         let report = {
             numEachChoice: [],
+            allocations: {
+                overall: [],
+                sortinghat: []
+            },
             numNoChoice: 0,
             noChoiceIDs: new Set(),
             mostPopularSections: [],  // Top 5 most common in student preferences
             leastPopularSections: [],  // 5 least common in student preferences
         };
-
-        // Records % of students getting their preferences. Index 0 = not a preference, 1-6 correspond with 1-6 pref.
-        let m_pref = [0, 0, 0, 0, 0, 0, 0];  // munkres preference performance
-        let a_pref = [0, 0, 0, 0, 0, 0, 0];  // overall preference performance
-        
-        // Compute preference performance of the munkres allocations
-        Object.keys(munkres).forEach(function (key, _) {
-            let student = studentsData[key];
-            let sectionID = allocations[key];
-            let pref = getPreferenceNumber(student, sectionID);
-            if (pref) {
-                m_pref[pref]++;
-            }
-            else {
-                m_pref[0]++;
-            }
-        });
-
-        // Compute overall preference performance
-        Object.keys(allocations).forEach(function (key, _) {
-            let student = initialStudentsData[key];
-            let sectionID = allocations[key];
-            let pref = getPreferenceNumber(student, sectionID);
-            if (pref) {
-                a_pref[pref]++;
-            }
-            else {
-                a_pref[0]++;
-            }
-        });
-
-        console.log(Object.keys(allocations).length);
-       
-        report["m_pref"] = m_pref;
-        report["a_pref"] = a_pref;
-        
+        // Report allocations
+        report.allocations.overall = calculateAllocationsPerformance(allocations, initialStudentsData);
+        report.allocations.sortinghat = calculateAllocationsPerformance(munkres, studentsData);        
         return report;
     }
 
 
     /** Takes a report object and makes it look nice in html. */
-    function printReport(report) {
-        // population: Statistics about the student population: number of students, number of each gender, number of athletes, etc. -->
-        // placements: Statistics about the placements: number of students placed (by SortingHat), number/percent in each choice.  
-        // warnings: Alerts user about improper inputs or program inadequacies. Students listing a previous professor, sections that
-        // failed to meet the gender or athlete ratio requirements would be listed here.
-        /*
-            % athletes that got blah...
-            % males that got blah
-            % females that got blah
-            % male athletes
-            % female athletes
+    function displayReport(report) {
+        // Display allocation charts
+        let allocations_overall_canvas = document.getElementById('allocations_overall_canvas').getContext('2d');
+        let allocations_sortinghat_canvas = document.getElementById('allocations_sortinghat_canvas').getContext('2d');
+        choiceDistributionChart(allocations_overall_canvas, report.allocations.overall, title="Allocations (All)");
+        choiceDistributionChart(allocations_sortinghat_canvas, report.allocations.sortinghat, title="Allocations (Excluding Pre-Assigned)")
 
-            running time
-        */
-
-        let population = document.getElementById("Population");
-
-
-        let placements = document.getElementById("Placements");
-        let chartCanvas = document.getElementById('myChart').getContext('2d');
-        let simplePlacementDist = report.a_pref.map(x => x.toFixed(1));
-        let backgroundColors = [
-            'rgba(234, 10, 255, 0.2)',
-            'rgba(63, 10, 255, 0.2)',
-            'rgba(10, 161, 255, 0.2)',
-            'rgba(10, 255, 177, 0.2)',
-            'rgba(14, 255, 10, 0.2)',
-            'rgba(255, 222, 10, 0.2)',
-            'rgba(255, 10, 10, 0.2)',
-        ];
-        let borderColors = [
-            'rgba(234, 10, 255, 1)',
-            'rgba(63, 10, 255, 1)',
-            'rgba(10, 161, 255, 1)',
-            'rgba(10, 255, 177, 1)',
-            'rgba(14, 255, 10, 1)',
-            'rgba(255, 222, 10, 1)',
-            'rgba(255, 10, 10, 1)',
-        ];
-        choiceDistributionChart(chartCanvas, simplePlacementDist, backgroundColors, borderColors);
-
-        let warnings = document.getElementById("Warnings");
-        // warnings.hidden = false;
-
-        document.getElementById("Report").hidden = false;
     }
 
     /** Returns a string with info from the studentStats object. */
@@ -546,7 +493,7 @@ window.onload = function () {
             studentStats.numMales + " male students and " + studentStats.numFemales + " female students. " + 
             "Of those students " + studentStats.numAthletes + " are athletes " + 
             "and " + studentStats.numPreAssigned + " have already been assigned sections." + 
-            ((studentStats.numPreferenceErrors > 0) ? "<br><br>WARNING: " + studentStats.numPreferenceErrors + " students did not list exactly 6 legal preferences." : "") +
+            ((studentStats.numPreferenceErrors > 0) ? "<br><br>WARNING: " + studentStats.numPreferenceErrors + " students did not list exactly 6 legal preferences. These students are:<blockquote>" + Array.from(studentStats.errorIDs).sort().join(', ') + "</blockquote>": "") +
             ((studentStats.duplicateIDs.size > 0) ? "<br><br>ERROR: The students with IDs " + Array.from(studentStats.duplicateIDs).join(', ') + " are present more than once. Please correct this before proceeding." : "");    
         }
 
@@ -560,23 +507,38 @@ window.onload = function () {
     }
 
     /** Populates the given canvas with the given distribution, background colors, and border colors. */
-    function choiceDistributionChart(chartCanvas, distribution, backgroundColors, borderColors) {
-        var ctx = chartCanvas;
-        var myChart = new Chart(ctx, {
+    function choiceDistributionChart(canvas, distribution, title="") {
+        return new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: ['None', 'Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6'],
                 datasets: [{
                     data: distribution,
-                    backgroundColor: backgroundColors,
-                    borderColor: borderColors,
+                    backgroundColor: [
+                        'rgba(234, 10, 255, 0.2)',
+                        'rgba(63, 10, 255, 0.2)',
+                        'rgba(10, 161, 255, 0.2)',
+                        'rgba(10, 255, 177, 0.2)',
+                        'rgba(14, 255, 10, 0.2)',
+                        'rgba(255, 222, 10, 0.2)',
+                        'rgba(255, 10, 10, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(234, 10, 255, 1)',
+                        'rgba(63, 10, 255, 1)',
+                        'rgba(10, 161, 255, 1)',
+                        'rgba(10, 255, 177, 1)',
+                        'rgba(14, 255, 10, 1)',
+                        'rgba(255, 222, 10, 1)',
+                        'rgba(255, 10, 10, 1)',
+                    ],
                     borderWidth: 1
                 }]
             },
             options: {
                 title: {
                     display: true,
-                    text: 'Breakdown of student allocation by student preference'
+                    text: title,
                 },
                 scales: {
                     yAxes: [{
