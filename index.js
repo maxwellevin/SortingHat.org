@@ -76,6 +76,7 @@ window.onload = function () {
         let obj = {};
         Papa.parse(file, {
             header: true,
+            skipEmptyLines: 'greedy',
             step: function (results) {
                 if (results.errors.length > 0) {
                     console.log("ERRORS:", results.errors);
@@ -123,6 +124,7 @@ window.onload = function () {
         Papa.parse(file, {
             header: true,
             dynamicTyping: true,
+            skipEmptyLines: 'greedy',
             step: function (results) {
                 if (results.errors.length > 0) {
                     console.log("ERRORS:", results.errors);
