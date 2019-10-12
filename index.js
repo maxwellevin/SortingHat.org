@@ -105,7 +105,7 @@ window.onload = function () {
             },
             complete: function (results, file) {
                 studentStats.numStudents = studentStats.IDs.size;
-                addStatsToElement(document.getElementById("students_container"), getStudentStatsString());
+                addStatsToElement(document.getElementById("students_container"), getInitialStudentStatsString());
                 initialStudentsData = obj;
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
@@ -147,7 +147,7 @@ window.onload = function () {
                 }
             },
             complete: function (results, file) {
-                addStatsToElement(document.getElementById("sections_container"), getSectionStatsString());
+                addStatsToElement(document.getElementById("sections_container"), getInitialSectionStatsString());
                 sectionsHandled = true;
                 initialSectionsData = obj;
                 document.getElementById("upload_student").disabled = false;
@@ -461,20 +461,37 @@ window.onload = function () {
 
     /** Compiles a number of statistics about the allocations into an object. */
     function createReport() {
+        // Define report structure
         let report = {
-            numEachChoice: [],
             allocations: {
-                overall: [],
-                sortinghat: []
+                overall: calculateAllocationsPerformance(allocations, initialStudentsData),
+                sortinghat: calculateAllocationsPerformance(munkres, studentsData),
+                preassigned: [0, 0, 0, 0, 0, 0, 0],
             },
-            numNoChoice: 0,
-            noChoiceIDs: new Set(),
+            males: {
+                average: 0,
+                std: 0,
+                max: 0,
+                min: 0,
+            },
+            females: {
+                average: 0,
+                std: 0,
+                max: 0,
+                min: 0,
+            },
+            athlete: {
+                average: 0,
+                std: 0,
+                max: 0,
+                min: 0
+            },
+            noChoiceIDs: new Set(),  // IDs of students who did not get any of their preferences
             mostPopularSections: [],  // Top 5 most common in student preferences
             leastPopularSections: [],  // 5 least common in student preferences
         };
-        // Report allocations
-        report.allocations.overall = calculateAllocationsPerformance(allocations, initialStudentsData);
-        report.allocations.sortinghat = calculateAllocationsPerformance(munkres, studentsData);        
+        // Make calculations
+        
         return report;
     }
 
@@ -490,7 +507,7 @@ window.onload = function () {
     }
 
     /** Returns a string with info from the studentStats object. */
-    function getStudentStatsString() {
+    function getInitialStudentStatsString() {
         return "There are " + studentStats.numStudents + " students in total, " + 
             studentStats.numMales + " male students and " + studentStats.numFemales + " female students. " + 
             "Of those students " + studentStats.numAthletes + " are athletes " + 
@@ -501,7 +518,7 @@ window.onload = function () {
 
 
     /** Returns a string with info from the sectionStats object. */
-    function getSectionStatsString() {
+    function getInitialSectionStatsString() {
         return "There are " + sectionStats.numSections + " sections " +
         "taught by " + sectionStats.professors.size + " professors. " +
         "There are " + sectionStats.numSeats + " total seats available." +
