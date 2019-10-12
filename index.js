@@ -508,21 +508,27 @@ window.onload = function () {
 
     /** Returns a string with info from the studentStats object. */
     function getInitialStudentStatsString() {
-        return "There are " + studentStats.numStudents + " students in total, " + 
-            studentStats.numMales + " male students and " + studentStats.numFemales + " female students. " + 
-            "Of those students " + studentStats.numAthletes + " are athletes " + 
-            "and " + studentStats.numPreAssigned + " have already been assigned sections." + 
-            ((studentStats.numPreferenceErrors > 0) ? "<br><br>WARNING: " + studentStats.numPreferenceErrors + " students did not list exactly 6 legal preferences. These students are:<blockquote>" + Array.from(studentStats.errorIDs).sort().join(', ') + "</blockquote>": "") +
-            ((studentStats.duplicateIDs.size > 0) ? "<br><br>ERROR: The students with IDs " + Array.from(studentStats.duplicateIDs).join(', ') + " are present more than once. Please correct this before proceeding." : "");    
-        }
+        let stats = `
+            There are ${studentStats.numStudents} students in total;
+            ${studentStats.numFemales} are female (${Math.round(100*studentStats.numFemales/studentStats.numStudents)}%) and
+            ${studentStats.numMales} are male (${Math.round(100*studentStats.numMales/studentStats.numStudents)}%).
+            Of those students, ${studentStats.numAthletes} are athletes (${Math.round(100*studentStats.numAthletes/studentStats.numStudents)}%).
+            There are ${studentStats.numPreAssigned} students who have already been assigned sections.
+        `;
+        if (studentStats.numPreferenceErrors > 0) stats += `<br><br>WARNING: ${studentStats.numPreferenceErrors} students did not list exactly 6 legal preferences. These students are: <blockquote>${Array.from(studentStats.errorIDs).sort().join(', ')}</blockquote>"`;
+        if (studentStats.duplicateIDs.size > 0) stats += `<br><br>ERROR: The students with IDs ${Array.from(studentStats.duplicateIDs).join(', ')} are present more than once. Please resolve this before proceeding.`
+        return stats;
+    }
 
 
     /** Returns a string with info from the sectionStats object. */
     function getInitialSectionStatsString() {
-        return "There are " + sectionStats.numSections + " sections " +
-        "taught by " + sectionStats.professors.size + " professors. " +
-        "There are " + sectionStats.numSeats + " total seats available." +
-        ((sectionStats.duplicateIDs.size > 0) ? "<br><br>The sections with IDs " + Array.from(sectionStats.duplicateIDs).join(', ') + " are present more than once. Please correct this before proceeding." : "");
+        stats = `
+            There are ${sectionStats.numSections} sections taught by ${sectionStats.professors.size} professors.
+            There are ${sectionStats.numSeats} total seats available.
+        `;
+        if (sectionStats.duplicateIDs.size > 0) stats += `<br><br>ERROR: The sections with IDs ${Array.from(sectionStats.duplicateIDs).join(', ')} are present more than once. Please resolve this before proceeding`;
+        return stats;
     }
 
     /** Populates the given canvas with the given distribution, background colors, and border colors. */
