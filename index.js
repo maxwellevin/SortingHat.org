@@ -1,4 +1,10 @@
 // "use strict";
+// TODO: Move filtering pre-assigned students to the handleStudentCSV method
+// TODO: Add a sectionResults object to contain details about assignments of each section and populate its fields following the actual assignment
+// TODO: Make a chart for the sectionResults object to display to the user
+//  -- namely for gender 
+//            and athlete distributions
+// TODO: Make plotting charts easier by abstracting the process to a function.
 
 window.onload = function () {
 
@@ -19,6 +25,7 @@ window.onload = function () {
             numGenderErrors: 0,
             numAthletes: 0,
             numPreferenceErrors: 0,
+            preassignedIDs: new Set(), // TODO implement this
             errorIDs: new Set(),
             IDs: new Set(),
             duplicateIDs: new Set(),
@@ -34,6 +41,7 @@ window.onload = function () {
             professors: new Set(),
             IDs: new Set(),
             duplicateIDs: new Set(),
+            sections: {},  // key: 'Core Section #'
         };
     }
 
@@ -88,29 +96,37 @@ window.onload = function () {
                 obj[student["ID"]] = student;
                 
                 // Update statistics
-                if (studentStats.IDs.has(student["ID"])) {
-                    studentStats.duplicateIDs.add(student["ID"]);
-                }
-                else {
-                    studentStats.IDs.add(student["ID"]);
-                    studentStats.numPreAssigned += (student["Placement"] != "") ? 1 : 0;
-                    studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
-                    studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
-                    studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
-                    if (adjustStudentPrefErrors(student)) {
-                        studentStats.numPreferenceErrors++;
-                        studentStats.errorIDs.add(student["ID"]);
-                    }
-                }
+                processStudent(student);
             },
             complete: function (results, file) {
                 studentStats.numStudents = studentStats.IDs.size;
+                studentStats.numPreAssigned = studentStats.preassignedIDs.size;
+                studentStats.numPreferenceErrors = studentStats.errorIDs.size;
                 addStatsToElement(document.getElementById("students_container"), getInitialStudentStatsString());
                 initialStudentsData = obj;
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
             }
         });
+    }
+
+    /** Updates the student stats object */
+    function processStudent(student) {
+        if (studentStats.IDs.has(student["ID"])) {
+            studentStats.duplicateIDs.add(student["ID"]);
+        }
+        else {
+            studentStats.IDs.add(student["ID"]);
+            if (student["Placement"] != "") {
+                studentStats.preassignedIDs.add(student["ID"]);
+            }
+            studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
+            studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
+            studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+            if (adjustStudentPrefErrors(student)) {  // modifies student's preferences if needed
+                studentStats.errorIDs.add(student["ID"]);
+            }
+        }
     }
 
 
@@ -164,34 +180,18 @@ window.onload = function () {
     }
 
 
-    /** Launches the meat of the program and reports the results. */
+    /** Runs the program; filters out preassigned students, build seats for the remaining students, runs the algorithm
+     * on unassigned students, combines the results, and displays a report of the results to the user.
+     */
     function runProgram() {
-        console.log(studentStats);
-        console.log(sectionStats);
-
         document.getElementById("run").disabled = true;
+        document.getElementById("save_as").disabled = false;
 
         preassignedStudents = filterInputData();
-        // console.log("The following students have already been assigned sections:");
-        // console.log(preassignedStudents);
-
         let seats = buildSeatObjects();
-        // console.log("The following seats have been prepared:");
-        // console.log(seats);
-
-        let costMatrix = buildCostMatrix(seats);
-        // console.log("The cost matrix has been built:");
-        // console.log(costMatrix);
-
-        munkres = getAllocations(costMatrix, seats);
-        // console.log("The hungarian algorithm has been run. The allocations are:");
-        // console.log(munkres);
-
-        // Combine the algorithm's allocations with previous allocations
+        munkres = getAllocations(buildCostMatrix(seats), seats);
         allocations = combineAllocations(munkres, preassignedStudents);
-
-        let report = createReport();
-        displayReport(report);
+        displayReport(createReport());
         
         document.getElementById("run").disabled = false;
         document.getElementById("save_as").disabled = false;
@@ -206,7 +206,7 @@ window.onload = function () {
 
         // Ensure that studentsData is empty and that sectionsData is a hard copy of the initial sections data.
         studentsData = {};
-        sectionsData = Object.assign([], initialSectionsData);
+        sectionsData = Object.assign([], initialSectionsData);  // hard copy
 
         // Iterate through the students by using their keys (ID's)
         Object.keys(initialStudentsData).forEach(function (key, _) {
@@ -515,7 +515,7 @@ window.onload = function () {
             Of those students, ${studentStats.numAthletes} are athletes (${Math.round(100*studentStats.numAthletes/studentStats.numStudents)}%).
             There are ${studentStats.numPreAssigned} students who have already been assigned sections.
         `;
-        if (studentStats.numPreferenceErrors > 0) stats += `<br><br>WARNING: ${studentStats.numPreferenceErrors} students did not list exactly 6 legal preferences. These students are: <blockquote>${Array.from(studentStats.errorIDs).sort().join(', ')}</blockquote>"`;
+        if (studentStats.numPreferenceErrors > 0) stats += `<br><br>WARNING: ${studentStats.numPreferenceErrors} students did not list exactly 6 legal preferences. These students are: <blockquote>${Array.from(studentStats.errorIDs).sort().join(', ')}</blockquote>`;
         if (studentStats.duplicateIDs.size > 0) stats += `<br><br>ERROR: The students with IDs ${Array.from(studentStats.duplicateIDs).join(', ')} are present more than once. Please resolve this before proceeding.`
         return stats;
     }
