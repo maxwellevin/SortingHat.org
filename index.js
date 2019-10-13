@@ -362,7 +362,7 @@ window.onload = function () {
         if (seat.reserveGender || seat.reserveNonAthlete) {
             if (student === {}) return illegalCost;
             if (seat.reserveGender && seat.gender !== student["Gender"]) return illegalCost;
-            if (seat.reserveNonAthlete && student["Athlete"] != "") return illegalCost;  // broken
+            if (seat.reserveNonAthlete && student["Athlete"] == "Y") return illegalCost;  // broken
         }
         let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);
         if (prefNum == 0) return defaultCost;
