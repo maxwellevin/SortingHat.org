@@ -19,17 +19,19 @@ window.onload = function () {
     let studentStats = {};
     function resetStudentStatistics() {
         return {
-            numStudents: 0,
-            numPreAssigned: 0,
-            numMales: 0,
-            numFemales: 0,
-            numGenderErrors: 0,
-            numAthletes: 0,
-            numPreferenceErrors: 0,
-            preassignedIDs: new Set(),
-            errorIDs: new Set(),
-            IDs: new Set(),
-            duplicateIDs: new Set(),
+            stats: {
+                numStudents: 0,
+                numPreAssigned: 0,
+                numMales: 0,
+                numFemales: 0,
+                numGenderErrors: 0,
+                numAthletes: 0,
+                numPreferenceErrors: 0,
+                preassignedIDs: new Set(),
+                errorIDs: new Set(),
+                IDs: new Set(),
+                duplicateIDs: new Set(),
+            },
             students: {},
             preassigned: {},
             unassigned: {},   // key: student ID, value: student
@@ -84,9 +86,9 @@ window.onload = function () {
                 processStudent(student);
             },
             complete: function (results, file) {
-                studentStats.numStudents = studentStats.IDs.size;
-                studentStats.numPreAssigned = studentStats.preassignedIDs.size;
-                studentStats.numPreferenceErrors = studentStats.errorIDs.size;
+                studentStats.stats.numStudents = studentStats.stats.IDs.size;
+                studentStats.stats.numPreAssigned = studentStats.stats.preassignedIDs.size;
+                studentStats.stats.numPreferenceErrors = studentStats.stats.errorIDs.size;
                 addStatsToElement(document.getElementById("students_container"), getInitialStudentStatsString());
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
@@ -97,17 +99,17 @@ window.onload = function () {
     /** Updates the student stats object */
     function processStudent(student) {
         let id = student["ID"];
-        if (studentStats.IDs.has(id)) {
-            studentStats.duplicateIDs.add(id);
+        if (studentStats.stats.IDs.has(id)) {
+            studentStats.stats.duplicateIDs.add(id);
         }
         else {
-            studentStats.IDs.add(id);
+            studentStats.stats.IDs.add(id);
             if (adjustStudentPrefErrors(student)) {  // modifies student's preferences if needed
-                studentStats.errorIDs.add(id);
+                studentStats.stats.errorIDs.add(id);
             }
             if (student["Placement"] != "") {
                 let sectionNum = student["Placement"];
-                studentStats.preassignedIDs.add(id);
+                studentStats.stats.preassignedIDs.add(id);
                 studentStats.preassigned[id] = sectionNum;
                 addStudentToSection(student, sectionStats.sections[sectionNum]);
             }
@@ -115,9 +117,9 @@ window.onload = function () {
                 studentStats.unassigned[id] = student;
             }
             studentStats.students[id] = student;
-            studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
-            studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
-            studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+            studentStats.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
+            studentStats.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
+            studentStats.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
         }
     }
 
@@ -504,14 +506,14 @@ window.onload = function () {
     /** Returns a string with info from the studentStats object. */
     function getInitialStudentStatsString() {
         let stats = `
-            There are ${studentStats.numStudents} students in total;
-            ${studentStats.numFemales} are female (${Math.round(100*studentStats.numFemales/studentStats.numStudents)}%) and
-            ${studentStats.numMales} are male (${Math.round(100*studentStats.numMales/studentStats.numStudents)}%).
-            Of those students, ${studentStats.numAthletes} are athletes (${Math.round(100*studentStats.numAthletes/studentStats.numStudents)}%).
-            There are ${studentStats.numPreAssigned} students who have already been assigned sections.
+            There are ${studentStats.stats.numStudents} students in total;
+            ${studentStats.stats.numFemales} are female (${Math.round(100*studentStats.stats.numFemales/studentStats.stats.numStudents)}%) and
+            ${studentStats.stats.numMales} are male (${Math.round(100*studentStats.stats.numMales/studentStats.stats.numStudents)}%).
+            Of those students, ${studentStats.stats.numAthletes} are athletes (${Math.round(100*studentStats.stats.numAthletes/studentStats.stats.numStudents)}%).
+            There are ${studentStats.stats.numPreAssigned} students who have already been assigned sections.
         `;
-        if (studentStats.numPreferenceErrors > 0) stats += `<br><br>WARNING: ${studentStats.numPreferenceErrors} students did not list exactly 6 legal preferences. These students are: <blockquote>${Array.from(studentStats.errorIDs).sort().join(', ')}</blockquote>`;
-        if (studentStats.duplicateIDs.size > 0) stats += `<br><br>ERROR: The students with IDs ${Array.from(studentStats.duplicateIDs).join(', ')} are present more than once. Please resolve this before proceeding.`
+        if (studentStats.stats.numPreferenceErrors > 0) stats += `<br><br>WARNING: ${studentStats.stats.numPreferenceErrors} students did not list exactly 6 legal preferences. These students are: <blockquote>${Array.from(studentStats.stats.errorIDs).sort().join(', ')}</blockquote>`;
+        if (studentStats.stats.duplicateIDs.size > 0) stats += `<br><br>ERROR: The students with IDs ${Array.from(studentStats.stats.duplicateIDs).join(', ')} are present more than once. Please resolve this before proceeding.`
         return stats;
     }
 
