@@ -29,6 +29,8 @@ window.onload = function () {
             errorIDs: new Set(),
             IDs: new Set(),
             duplicateIDs: new Set(),
+            unassigned: {},   // key: student ID, value: student
+            assignments: {},  // key: student ID, value: section ID
         };
     }
 
@@ -41,7 +43,7 @@ window.onload = function () {
             professors: new Set(),
             IDs: new Set(),
             duplicateIDs: new Set(),
-            sections: {},  // key: 'Core Section #'
+            sections: {},  // key: 'Core Section #': value: {stats: {}, students: set()}
         };
     }
 
@@ -112,20 +114,29 @@ window.onload = function () {
 
     /** Updates the student stats object */
     function processStudent(student) {
-        if (studentStats.IDs.has(student["ID"])) {
-            studentStats.duplicateIDs.add(student["ID"]);
+        let id = student["ID"];
+        if (studentStats.IDs.has(id)) {
+            studentStats.duplicateIDs.add(id);
         }
         else {
-            studentStats.IDs.add(student["ID"]);
+            studentStats.IDs.add(id);
+            if (adjustStudentPrefErrors(student)) {  // modifies student's preferences if needed
+                studentStats.errorIDs.add(id);
+            }
             if (student["Placement"] != "") {
-                studentStats.preassignedIDs.add(student["ID"]);
+                let sectionNum = student["Placement"];
+                studentStats.preassignedIDs.add(id);
+                // assign(student, student["Placement"]);
+                studentStats.assignments[id] = sectionNum;
+                sectionStats.sections[sectionNum].students.add(student); // todo: initialize this array
+                // TODO: update stats of the assigned section
+            }
+            else {
+                studentStats.unassigned[id] = student;
             }
             studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
             studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
             studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
-            if (adjustStudentPrefErrors(student)) {  // modifies student's preferences if needed
-                studentStats.errorIDs.add(student["ID"]);
-            }
         }
     }
 
@@ -150,17 +161,7 @@ window.onload = function () {
                 // Add section to our sections data
                 let section = results.data[0];
                 obj[section["Core Section #"]] = section;
-
-                // Track section statistics
-                if (sectionStats.IDs.has(section["Core Section #"])) {
-                    sectionStats.duplicateIDs,add(section["Core Section #"]);
-                }
-                else {
-                    sectionStats.IDs.add(section["Core Section #"]);
-                    sectionStats.numSections += 1;
-                    sectionStats.numSeats += section["Student Cap"];
-                    sectionStats.professors.add(section["Professor"]);
-                }
+                processSection(section);                
             },
             complete: function (results, file) {
                 addStatsToElement(document.getElementById("sections_container"), getInitialSectionStatsString());
@@ -172,6 +173,28 @@ window.onload = function () {
         });
     }
 
+    /** Updates the section stats object */
+    function processSection(section) {
+        if (sectionStats.IDs.has(section["Core Section #"])) {
+            sectionStats.duplicateIDs.add(section["Core Section #"]);
+        }
+        else {
+            let sectionNum = section["Core Section #"];
+            sectionStats.IDs.add(sectionNum);
+            sectionStats.numSections += 1;
+            sectionStats.numSeats += section["Student Cap"];
+            sectionStats.professors.add(section["Professor"]);
+            sectionStats.sections[sectionNum] = {
+                stats: {
+                    numStudents: 0,
+                    numMales: 0,
+                    numFemales: 0,
+                    numAthletes: 0
+                },
+                students: new Set(),
+            };
+        }
+    }
 
     /** Toggles the state of the 'run' button based on the states of studentsHandled and sectionsHandled. */
     function handleRunButton() {
