@@ -1,6 +1,7 @@
-// "use strict";
-// TODO: Move filtering pre-assigned students to the handleStudentCSV method
-// TODO: Add a sectionResults object to contain details about assignments of each section and populate its fields following the actual assignment
+"use strict";
+// DONE: Move filtering pre-assigned students to the handleStudentCSV method
+// DONE: Add a sectionResults object to contain details about assignments of each section and populate its fields following the actual assignment
+// TODO: Populate the sectionStats.sections object with stats and allocations
 // TODO: Make a chart for the sectionResults object to display to the user
 //  -- namely for gender 
 //            and athlete distributions
@@ -25,10 +26,12 @@ window.onload = function () {
             numGenderErrors: 0,
             numAthletes: 0,
             numPreferenceErrors: 0,
-            preassignedIDs: new Set(), // TODO implement this
+            preassignedIDs: new Set(),
             errorIDs: new Set(),
             IDs: new Set(),
             duplicateIDs: new Set(),
+            students: {},
+            preassigned: {},
             unassigned: {},   // key: student ID, value: student
             assignments: {},  // key: student ID, value: section ID
         };
@@ -50,26 +53,6 @@ window.onload = function () {
     /** Boolean values to track handling of students and sections. */
     let studentsHandled = false;
     let sectionsHandled = false;
-
-    /** Objects to keep track of the students and sections data parsed from csv inputs. */
-    let initialStudentsData = {};  // ID: "ID"
-    let initialSectionsData = {};  // ID: "Core Section #"
-
-    /** Object to keep track of the students who have been assigned a section prior to running the script. */
-    let preassignedStudents = {};
-
-    /** Objects to keep track of the students and sections data filtered from the original inputs. These are used as
-     * inputs in the hungarian/munkres algorithm. */
-    let studentsData = {};  // ID: "ID"
-    let sectionsData = {};  // ID: "Core Section #"
-
-    /** The results of the hungarian/munkres algorithm. This is an object with a key of student id and a value of the
-     * student's assigned section number. */
-    let munkres = {};
-
-    /** The results of the hungarian/munkres algorithm combined with the existing allocations. This is an object with a
-     * key key of student id and a value of the student's assigned section number. */
-    let allocations = {};
 
     /** Define parameters for the cost matrix. */
     let costBase = 3.5;
@@ -105,7 +88,6 @@ window.onload = function () {
                 studentStats.numPreAssigned = studentStats.preassignedIDs.size;
                 studentStats.numPreferenceErrors = studentStats.errorIDs.size;
                 addStatsToElement(document.getElementById("students_container"), getInitialStudentStatsString());
-                initialStudentsData = obj;
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
             }
@@ -126,20 +108,28 @@ window.onload = function () {
             if (student["Placement"] != "") {
                 let sectionNum = student["Placement"];
                 studentStats.preassignedIDs.add(id);
-                // assign(student, student["Placement"]);
-                studentStats.assignments[id] = sectionNum;
-                sectionStats.sections[sectionNum].students.add(student); // todo: initialize this array
-                // TODO: update stats of the assigned section
+                studentStats.preassigned[id] = sectionNum;
+                addStudentToSection(student, sectionStats.sections[sectionNum]);
             }
             else {
                 studentStats.unassigned[id] = student;
             }
+            studentStats.students[id] = student;
             studentStats.numMales += (student["Gender"] == "M") ? 1 : 0;
             studentStats.numFemales += (student["Gender"] == "F") ? 1 : 0;
             studentStats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
         }
     }
 
+    function addStudentToSection(student, section) {
+        studentStats.assignments[student["ID"]] = section["Core Section #"];
+        section.students.add(student["ID"]);
+        section["Student Cap"] -= 1;
+        section.stats.numStudents++;
+        section.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
+        section.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
+        section.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+    }
 
     /** Handles the section csv file uploading. */
     function handleSectionFile() {
@@ -166,7 +156,6 @@ window.onload = function () {
             complete: function (results, file) {
                 addStatsToElement(document.getElementById("sections_container"), getInitialSectionStatsString());
                 sectionsHandled = true;
-                initialSectionsData = obj;
                 document.getElementById("upload_student").disabled = false;
                 handleRunButton();  // checks to see if students are handled too
             }
@@ -185,6 +174,9 @@ window.onload = function () {
             sectionStats.numSeats += section["Student Cap"];
             sectionStats.professors.add(section["Professor"]);
             sectionStats.sections[sectionNum] = {
+                "Core Section #": sectionNum,
+                "Professor": section["Professor"],
+                "Student Cap": section["Student Cap"],
                 stats: {
                     numStudents: 0,
                     numMales: 0,
@@ -204,52 +196,20 @@ window.onload = function () {
 
 
     /** Runs the program; filters out preassigned students, build seats for the remaining students, runs the algorithm
-     * on unassigned students, combines the results, and displays a report of the results to the user.
-     */
+     * on unassigned students, combines the results, and displays a report of the results to the user. */
     function runProgram() {
         document.getElementById("run").disabled = true;
         document.getElementById("save_as").disabled = false;
 
-        preassignedStudents = filterInputData();
-        let seats = buildSeatObjects();
-        munkres = getAllocations(buildCostMatrix(seats), seats);
-        allocations = combineAllocations(munkres, preassignedStudents);
+        let seats = buildSeatObjects(sectionStats.sections);  // now uses the provided section to build seats
+        let costMatrix = buildCostMatrix(seats, studentStats.unassigned);
+        let allocations = runCostMatrix(costMatrix);
+        makeAssignments(allocations, seats, studentStats.unassigned);  // updates studentStats.assignments
         displayReport(createReport());
         
         document.getElementById("run").disabled = false;
         document.getElementById("save_as").disabled = false;
     }
-
-
-    /** Filters the original students and sections data to account for pre-assigned students and students with illegal
-     * preferences. Updates studentsData and sectionsData global objects and returns an object for the preassigned
-     * students. */
-    function filterInputData() {
-        let preassignedStudents = {};
-
-        // Ensure that studentsData is empty and that sectionsData is a hard copy of the initial sections data.
-        studentsData = {};
-        sectionsData = Object.assign([], initialSectionsData);  // hard copy
-
-        // Iterate through the students by using their keys (ID's)
-        Object.keys(initialStudentsData).forEach(function (key, _) {
-            let student = initialStudentsData[key];
-
-            // For each student, check if they have already been assigned a section
-            if (student["Placement"] !== "") {
-                preassignedStudents[key] = student["Placement"];
-                let sectionKey = student["Placement"];
-                sectionsData[sectionKey]["Student Cap"] -= 1;
-            }
-            // If they haven't already been assigned, copy them to a new object to use with the algorithm.
-            else {
-                studentsData[key] = student;
-            }
-        });
-        return preassignedStudents;
-    }
-
-
 
     /** Given a student and a set sectionIDs where:
      *      sectionIDs: the IDs of all sections
@@ -260,7 +220,7 @@ window.onload = function () {
         let prefIDs = getPreferenceIDs(student);
         let arr = [];
         let dup = new Set();
-        for (i = 0; i < prefIDs.length; i++) {
+        for (let i = 0; i < prefIDs.length; i++) {
             let currID = prefIDs[i];
             if (dup.has(currID) || !sectionStats.IDs.has(currID)) legal = false;
             else arr.push(currID);
@@ -270,18 +230,18 @@ window.onload = function () {
         return !legal || arr.length != 6;
     }
 
-
+    // TODO: Account for preassigned students! (At least male/female. Athletes might be more tricky)
     /** Builds an object to hold an array of seats. Each seat has three main properties:
      * reserved: true if the seat is reserved for a specific gender of student, false otherwise.
      * gender: Either "M", "F", or "". Indicates the gender of student that the seat is reserved for.
      * section: A string which identifies the section this seat belongs to. */
-    function buildSeatObjects() {
+    function buildSeatObjects(sectionsObj) {
         // Define a seats array
         let seatsArray = [];
 
         // Iterate through all of the sections (I hope this does so in order, otherwise we'll have issues later)
-        Object.keys(sectionsData).forEach(function (key, _) {
-            let currentSection = sectionsData[key];
+        Object.keys(sectionsObj).forEach(function (key, _) {
+            let currentSection = sectionsObj[key];
 
             // Total number of seats in this section
             let numSeats = currentSection["Student Cap"];
@@ -359,16 +319,16 @@ window.onload = function () {
     /** Constructs the cost matrix based on user-input parameters and the students/sections arrays. Returns a matrix of
      * weights which represent the cost of assigning the student (represented by a row) to a seat in a class
      * (represented by individual columns, stacked sequentially). */
-    function buildCostMatrix(seats) {
+    function buildCostMatrix(seats, studentsObj) {
         let matrix = [];
-        Object.keys(studentsData).forEach(function (key, _) {  // Real students
+        Object.keys(studentsObj).forEach(function (key, _) {  // Real students
             let arr = [];
             for (let i = 0; i < seats.length; i++) {
-                arr.push(getStudentCostForSeat(studentsData[key], seats[i]));
+                arr.push(getStudentCostForSeat(studentsObj[key], seats[i]));
             }
             matrix.push(arr);
         });
-        for (let i = 0; i < seats.length - Object.keys(studentsData).length; i++) {  // Placeholder students
+        for (let i = 0; i < seats.length - Object.keys(studentsObj).length; i++) {  // Placeholder students
             let arr = [];
             for (let j = 0; j < seats.length; j++) {
                 arr.push(getStudentCostForSeat({}, seats[j]));
@@ -409,7 +369,7 @@ window.onload = function () {
     /** Returns an array of the student's preferences. */
     function getPreferenceIDs(student) {
         let prefIDs = [];
-        for (i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 6; i++) {
             prefIDs.push(student["Choice " + i]);
         }
         return prefIDs;
@@ -418,10 +378,10 @@ window.onload = function () {
 
     /** Modifies the student's preferences to the given prefIDs array. */
     function setPreferences(student, prefIDs) {
-        for (i = 1; i < prefIDs.length; i++) {
+        for (let i = 1; i < prefIDs.length; i++) {
             student["Choice " + i] = prefIDs[i-1];
         }
-        for (i = prefIDs.length; i <= 6; i++) {
+        for (let i = prefIDs.length; i <= 6; i++) {
             student["Choice " + i] = "any"; // TODO: make this matter
         }
     }
@@ -429,7 +389,7 @@ window.onload = function () {
     /** Runs the hungarian algorithm on the given matrix and returns the allocations. An allocation is an object where
      * the key is the student's id and the values are pointers to the student's object and the allocated section's
      * object. */
-    function getAllocations(matrix, seats) {
+    function getAllocations(matrix, seats, studentsObj) {
         // Initialize the allocations object
         let munkres = {};
 
@@ -438,19 +398,32 @@ window.onload = function () {
 
         // Loop through the students data
         let i = 0;
-        Object.keys(studentsData).forEach(function (key, _) {
+        Object.keys(studentsObj).forEach(function (key, _) {
             let index = indices[i++][1];  // The allocation is the second entry
             let assignedSection = seats[index].section;
 
             // Build the objects
             munkres[key] = assignedSection["Core Section #"];
+            addStudentToSection(studentsObj[key], assignedSection);
         });
-
 
         // Return the results
         return munkres;
     }
 
+    // Run the Munkres/Hungarian algorithm on the cost matrix
+    function runCostMatrix(costMatrix) {
+        return new Munkres().compute(costMatrix);
+    }
+
+    function makeAssignments(allocations, seats, studentsObj) {
+        let i = 0;
+        Object.keys(studentsObj).forEach(function (key, _) {
+            let index = allocations[i++][1];  // The allocation is the second entry
+            let assignedSection = seats[index].section;
+            addStudentToSection(studentsObj[key], assignedSection);
+        });
+    }
 
     /** Combines the allocations from the munkres/hungarian algorithm with the existing allocations. Returns an object
      * with student ID as a key and "Core Section #" as the value. */
@@ -487,9 +460,8 @@ window.onload = function () {
         // Define report structure
         let report = {
             allocations: {
-                overall: calculateAllocationsPerformance(allocations, initialStudentsData),
-                sortinghat: calculateAllocationsPerformance(munkres, studentsData),
-                preassigned: [0, 0, 0, 0, 0, 0, 0],
+                overall: calculateAllocationsPerformance(studentStats.assignments, studentStats.students),
+                preassigned: calculateAllocationsPerformance(studentStats.preassigned, studentStats.students),
             },
             males: {
                 average: 0,
@@ -524,9 +496,9 @@ window.onload = function () {
         // Display allocation charts
         let allocations_overall_canvas = document.getElementById('allocations_overall_canvas').getContext('2d');
         let allocations_sortinghat_canvas = document.getElementById('allocations_sortinghat_canvas').getContext('2d');
-        choiceDistributionChart(allocations_overall_canvas, report.allocations.overall, title="Allocations (All)");
-        choiceDistributionChart(allocations_sortinghat_canvas, report.allocations.sortinghat, title="Allocations (Excluding Pre-Assigned)")
-
+        let labels = ['None', 'Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6'];
+        choiceDistributionChart(allocations_overall_canvas, labels, report.allocations.overall, "Allocations (All)");
+        choiceDistributionChart(allocations_sortinghat_canvas, labels, report.allocations.preassigned, "Allocations (Only Pre-Assigned)")
     }
 
     /** Returns a string with info from the studentStats object. */
@@ -546,7 +518,7 @@ window.onload = function () {
 
     /** Returns a string with info from the sectionStats object. */
     function getInitialSectionStatsString() {
-        stats = `
+        let stats = `
             There are ${sectionStats.numSections} sections taught by ${sectionStats.professors.size} professors.
             There are ${sectionStats.numSeats} total seats available.
         `;
@@ -555,11 +527,11 @@ window.onload = function () {
     }
 
     /** Populates the given canvas with the given distribution, background colors, and border colors. */
-    function choiceDistributionChart(canvas, distribution, title="") {
+    function choiceDistributionChart(canvas, labels, distribution, title) {
         return new Chart(canvas, {
             type: 'bar',
             data: {
-                labels: ['None', 'Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6'],
+                labels: labels,
                 datasets: [{
                     data: distribution,
                     backgroundColor: [
@@ -602,20 +574,17 @@ window.onload = function () {
         });
     }
 
-    /** Saves the results of the program upon a successful run of the algorithm. */
+    /** Saves the allocations to a csv file when the user clicks the "Save" button. Note the save path is specified by
+     * the user's browser. */
     function saveResults() {
         // Convert the allocations object to an array
         let results = ["Student ID,Core Section #"];  // Headers
-        Object.keys(allocations).forEach(function (key, _) {
-            results.push(key + "," + allocations[key]);
+        Object.keys(studentStats.assignments).forEach(function (key, _) {
+            results.push(key + "," + studentStats.assignments[key]);
         });
-
-        // Convert the array to a string
         let data = results.join("\n");
-
-        // Save the string to a new file. Note: Not possible to open save as dialog box through javascript.
-        let blob = new Blob([data], {type: "text/csv;charset=utf-8"});
-        saveAs(blob, "sortedhat.csv");
+        let blob = new Blob([data], {type: "text/csv;charset=utf-8"});  // Save the string to a new file. Note: Not possible to open save as dialog box through javascript.
+        saveAs(blob, "sortedhat.csv");  // from js/file-saver
     }
 
 
