@@ -1,10 +1,7 @@
 "use strict";
-// DONE: Move filtering pre-assigned students to the handleStudentCSV method
-// DONE: Add a sectionResults object to contain details about assignments of each section and populate its fields following the actual assignment
-// TODO: Populate the sectionStats.sections object with stats and allocations
-// TODO: Make a chart for the sectionResults object to display to the user
-//  -- namely for gender 
-//            and athlete distributions
+// TODO: Calculate a 'popularity score' for each section and make a chart after students are imported
+// TODO: Calculate remaining statistics for sectionStats.sections object
+// TODO: Make a chart for the sectionResults object to display to the user (gender, athlete distributions)
 // TODO: Make plotting charts easier by abstracting the process to a function.
 
 window.onload = function () {
@@ -51,6 +48,20 @@ window.onload = function () {
             sections: {},  // key: 'Core Section #': value: {stats: {}, students: set()}
         };
     }
+    function createNewSection(section) {
+        return {
+            "Core Section #": section["Core Section #"],
+            "Professor": section["Professor"],
+            "Student Cap": section["Student Cap"],
+            stats: {
+                numStudents: 0,
+                numMales: 0,
+                numFemales: 0,
+                numAthletes: 0
+            },
+            students: new Set(),
+        };
+    }
 
     /** Boolean values to track handling of students and sections. */
     let studentsHandled = false;
@@ -68,7 +79,6 @@ window.onload = function () {
         studentsHandled = false;
         handleRunButton();
         let file = document.getElementById("upload_student").files[0];
-        let obj = {};
         Papa.parse(file, {
             header: true,
             skipEmptyLines: 'greedy',
@@ -78,11 +88,7 @@ window.onload = function () {
                     alert("An error occurred while handling the student csv file: " + results.errors);
                     return;
                 }
-                // Add student to initialStudentsData
                 let student = results.data[0];
-                obj[student["ID"]] = student;
-                
-                // Update statistics
                 processStudent(student);
             },
             complete: function (results, file) {
@@ -139,7 +145,6 @@ window.onload = function () {
         sectionsHandled = false;
         handleRunButton();
         let file = document.getElementById("upload_section").files[0];
-        let obj = {};
         Papa.parse(file, {
             header: true,
             dynamicTyping: true,
@@ -150,9 +155,7 @@ window.onload = function () {
                     alert("An error occurred while handling the sections csv file: " + results.errors);
                     return;
                 }
-                // Add section to our sections data
                 let section = results.data[0];
-                obj[section["Core Section #"]] = section;
                 processSection(section);                
             },
             complete: function (results, file) {
@@ -175,18 +178,7 @@ window.onload = function () {
             sectionStats.numSections += 1;
             sectionStats.numSeats += section["Student Cap"];
             sectionStats.professors.add(section["Professor"]);
-            sectionStats.sections[sectionNum] = {
-                "Core Section #": sectionNum,
-                "Professor": section["Professor"],
-                "Student Cap": section["Student Cap"],
-                stats: {
-                    numStudents: 0,
-                    numMales: 0,
-                    numFemales: 0,
-                    numAthletes: 0
-                },
-                students: new Set(),
-            };
+            sectionStats.sections[sectionNum] = createNewSection(section);
         }
     }
 
@@ -354,13 +346,12 @@ window.onload = function () {
         return Math.pow(costBase, prefNum);
     }
 
-
     /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
      * section is not in the student's preferences, then the function returns 0. Note: students are allowed six
      * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
     function getPreferenceNumber(student, sectionID) {
         for (let i = 1; i < 7; i++) {
-            if (student["Choice " + i] === sectionID) {
+            if (student["Choice " + i] === sectionID || student["Choice " + i] === "any") {
                 return i;
             }
         }
@@ -384,7 +375,7 @@ window.onload = function () {
             student["Choice " + i] = prefIDs[i-1];
         }
         for (let i = prefIDs.length; i <= 6; i++) {
-            student["Choice " + i] = "any"; // TODO: make this matter
+            student["Choice " + i] = "any";
         }
     }
 
@@ -413,11 +404,13 @@ window.onload = function () {
         return munkres;
     }
 
-    // Run the Munkres/Hungarian algorithm on the cost matrix
+    /** Run the Munkres/Hungarian algorithm on the cost matrix. */
     function runCostMatrix(costMatrix) {
         return new Munkres().compute(costMatrix);
     }
 
+    /** Given the allocations from the hungarian algorithm, interpret the results for unassigned students and make the
+     * assignment */
     function makeAssignments(allocations, seats, studentsObj) {
         let i = 0;
         Object.keys(studentsObj).forEach(function (key, _) {
@@ -427,17 +420,8 @@ window.onload = function () {
         });
     }
 
-    /** Combines the allocations from the munkres/hungarian algorithm with the existing allocations. Returns an object
-     * with student ID as a key and "Core Section #" as the value. */
-    function combineAllocations(m, a) {
-        let b = Object.assign({}, m);
-        Object.keys(a).forEach(function (key, _) {
-            b[key] = a[key];
-        });
-        return b;
-    }
-
-    /**  */
+    /** Gets the number of students who were assigned their top choice, second, third, etc. Index 0 in the returned array
+     * is the number of students who didn't get any of their preferences. */
     function calculateAllocationsPerformance(allocations, dataSource) {
         let data = [0, 0, 0, 0, 0, 0, 0];  // 0: None, 1-6: preference
         Object.keys(allocations).forEach(function (studentID, _) {
@@ -571,7 +555,7 @@ window.onload = function () {
                 },
                 legend: {
                     display: false
-                }
+                },
             }
         });
     }
