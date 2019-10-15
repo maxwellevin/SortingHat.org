@@ -57,7 +57,8 @@ window.onload = function () {
                 numStudents: 0,
                 numMales: 0,
                 numFemales: 0,
-                numAthletes: 0
+                numAthletes: 0,
+                popularity: 0,
             },
             students: new Set(),
         };
@@ -95,7 +96,9 @@ window.onload = function () {
                 studentStats.stats.numStudents = studentStats.stats.IDs.size;
                 studentStats.stats.numPreAssigned = studentStats.stats.preassignedIDs.size;
                 studentStats.stats.numPreferenceErrors = studentStats.stats.errorIDs.size;
-                addStatsToElement(document.getElementById("students_container"), getInitialStudentStatsString());
+                // Add stats to page
+                addStatsToElement(document.getElementById("students_container"), getInitialStudentStatsString());  // Text-stats
+                addPopularityChart(document.getElementById("students_container"))
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
             }
@@ -126,13 +129,22 @@ window.onload = function () {
             studentStats.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
             studentStats.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
             studentStats.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+            getPreferenceIDs(student).forEach(sectionID => {  // popularity score
+                let prefNum = getPreferenceNumber(student, sectionID);
+                if (sectionStats.IDs.has(sectionID) && sectionID !== "any") {
+                    sectionStats.sections[sectionID].stats.popularity += 1 / prefNum;
+                }
+            });
         }
     }
 
+    // TODO: Add to popularity score for each section in preferences
     function addStudentToSection(student, section) {
+        // Necessary stuff
         studentStats.assignments[student["ID"]] = section["Core Section #"];
         section.students.add(student["ID"]);
         section["Student Cap"] -= 1;
+        // Stats
         section.stats.numStudents++;
         section.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
         section.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
@@ -379,30 +391,6 @@ window.onload = function () {
         }
     }
 
-    /** Runs the hungarian algorithm on the given matrix and returns the allocations. An allocation is an object where
-     * the key is the student's id and the values are pointers to the student's object and the allocated section's
-     * object. */
-    function getAllocations(matrix, seats, studentsObj) {
-        // Initialize the allocations object
-        let munkres = {};
-
-        // Run the Munkres/Hungarian algorithm on the cost matrix
-        let indices = new Munkres().compute(matrix);
-
-        // Loop through the students data
-        let i = 0;
-        Object.keys(studentsObj).forEach(function (key, _) {
-            let index = indices[i++][1];  // The allocation is the second entry
-            let assignedSection = seats[index].section;
-
-            // Build the objects
-            munkres[key] = assignedSection["Core Section #"];
-            addStudentToSection(studentsObj[key], assignedSection);
-        });
-
-        // Return the results
-        return munkres;
-    }
 
     /** Run the Munkres/Hungarian algorithm on the cost matrix. */
     function runCostMatrix(costMatrix) {
@@ -440,6 +428,21 @@ window.onload = function () {
         element.appendChild(stats);
     }
 
+
+    function addPopularityChart(parentElement) {
+        let labels = Object.keys(sectionStats.sections);
+        let data = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            arr.push(sectionStats.sections[key].stats.popularity);
+            return arr;
+        }, []);
+        let popularityChart = document.createElement('canvas');
+        popularityChart.width = 3;
+        popularityChart.height = 1;
+        popularityChart.id = 'popularity_chart';
+        parentElement.appendChild(popularityChart);
+        let context = popularityChart.getContext('2d');
+        createChart(context, labels, data, "Section Popularity");
+    }
 
     /** Compiles a number of statistics about the allocations into an object. */
     function createReport() {
@@ -538,6 +541,38 @@ window.onload = function () {
                         'rgba(255, 222, 10, 1)',
                         'rgba(255, 10, 10, 1)',
                     ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: title,
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                },
+            }
+        });
+    }
+
+
+    function createChart(context, labels, data, title, type='bar') {
+        return new Chart(context, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: 'rgba(10, 161, 255, 0.2)',
+                    borderColor: 'rgba(10, 161, 255, 1)',
                     borderWidth: 1
                 }]
             },
