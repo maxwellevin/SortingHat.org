@@ -4,9 +4,9 @@ import random
 # Settings
 num_sections = 35
 seats_per_section = 20
-num_students = 691
-section_filename = "py_sections_3.csv"
-student_filename = "py_students_3.csv"
+num_students = 693
+section_filename = "py_sections_1.csv"
+student_filename = "py_students_1.csv"
 
 # Create Section Data
 core_section_numbers = ["Section-" + str(i+1) for i in range(num_sections)]
@@ -32,9 +32,9 @@ choice6 = [random.choice(tuple(core_section_numbers - {choice1[i], choice2[i], c
 
 # Create DataFrame
 students = pd.DataFrame(data=[{
-    "Placement": "",
+    "Placement": random.choice((choice1[i], choice2[i], choice3[i])) if random.random() > 0.90 else "",
     "ID": str(i),
-    "Gender": random.choice(["M", "F"]),
+    "Gender": "F" if random.random() > 0.40 else "M",
     "Athlete": "Y" if random.random() > 0.75 else "",
     "Sport": "", 
     "Previous Instructor": "", 
