@@ -1,9 +1,6 @@
 "use strict";
-// TODO: Calculate a 'popularity score' for each section and make a chart after students are imported
-// TODO: Calculate remaining statistics for sectionStats.sections object
-// TODO: Make a chart for the sectionResults object to display to the user (gender, athlete distributions)
-// TODO: Make plotting charts easier by abstracting the process to a function.
 
+// TODO: Display 
 window.onload = function () {
 
     /** Add event listeners for actionable buttons */
@@ -138,7 +135,9 @@ window.onload = function () {
         }
     }
 
-    // TODO: Add to popularity score for each section in preferences
+    /** Adds the given student to the given section by adding the sectionID to the the studentStats.assignments object,
+     * adding the student's id to the section.students set, and reducing the section's cap. Also updates several of the
+     * section's stats from student info. */
     function addStudentToSection(student, section) {
         // Necessary stuff
         studentStats.assignments[student["ID"]] = section["Core Section #"];
@@ -207,12 +206,15 @@ window.onload = function () {
         document.getElementById("run").disabled = true;
         document.getElementById("save_as").disabled = false;
 
+        // Do algorithm stuff
         let seats = buildSeatObjects(sectionStats.sections);  // now uses the provided section to build seats
         let costMatrix = buildCostMatrix(seats, studentStats.unassigned);
         let allocations = runCostMatrix(costMatrix);
         makeAssignments(allocations, seats, studentStats.unassigned);  // updates studentStats.assignments
-        displayReport(createReport());
-        
+
+        // Display result stats to the user
+        reportResults();
+
         document.getElementById("run").disabled = false;
         document.getElementById("save_as").disabled = false;
     }
@@ -421,73 +423,145 @@ window.onload = function () {
     }
 
     /** Adds the string to the element in a <p> tag and adds the 'report-text' class for styling. */
-    function addStatsToElement(element, statsString) {
+    function addStatsToElement(parentElement, statsString) {
         let stats = document.createElement("p");
         stats.className = "report-text";
         stats.innerHTML = statsString;
-        element.appendChild(stats);
+        parentElement.appendChild(stats);
     }
 
-
+    /** Reads section popularity data from sectionStats.section.stats.popularity (created while reading student preferences)
+     * and displays a bar chart of the relative popularity of all the sections found in sectionStats.sections. Popularity 
+     * is calculated as the sum across all students of {(1 / pref#) if the section is in the student's preferences, else (0)}. */
     function addPopularityChart(parentElement) {
         let labels = Object.keys(sectionStats.sections);
         let data = Object.keys(sectionStats.sections).reduce((arr, key) => {
-            arr.push(sectionStats.sections[key].stats.popularity);
+            arr.push(Math.round(sectionStats.sections[key].stats.popularity));
             return arr;
         }, []);
-        let popularityChart = document.createElement('canvas');
-        popularityChart.width = 3;
-        popularityChart.height = 1;
-        popularityChart.id = 'popularity_chart';
-        parentElement.appendChild(popularityChart);
-        let context = popularityChart.getContext('2d');
-        createChart(context, labels, data, "Section Popularity");
+        createSectionChart(parentElement, labels, data, "Section Popularity");
     }
 
-    /** Compiles a number of statistics about the allocations into an object. */
-    function createReport() {
-        // Define report structure
-        let report = {
-            allocations: {
-                overall: calculateAllocationsPerformance(studentStats.assignments, studentStats.students),
-                preassigned: calculateAllocationsPerformance(studentStats.preassigned, studentStats.students),
-            },
-            males: {
-                average: 0,
-                std: 0,
-                max: 0,
-                min: 0,
-            },
-            females: {
-                average: 0,
-                std: 0,
-                max: 0,
-                min: 0,
-            },
-            athlete: {
-                average: 0,
-                std: 0,
-                max: 0,
-                min: 0
-            },
-            noChoiceIDs: new Set(),  // IDs of students who did not get any of their preferences
-            mostPopularSections: [],  // Top 5 most common in student preferences
-            leastPopularSections: [],  // 5 least common in student preferences
-        };
-        // Make calculations
-        
-        return report;
+    // TODO: Complete Gender Charts
+    function addGenderCharts(parentElement) {
+        let labels = Object.keys(sectionStats.sections);
+        let males = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            let section = sectionStats.sections[key];
+            arr.push(Math.round(100 * section.stats.numMales / section.stats.numStudents));
+            return arr;
+        }, []);
+        createSectionChart(parentElement, labels, males, "Gender Balance (% Males)");
+        let females = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            let section = sectionStats.sections[key];
+            arr.push(Math.round(100 * section.stats.numFemales / section.stats.numStudents));
+            return arr;
+        }, []);
+        createSectionChart(parentElement, labels, females, "Gender Balance (% Females)");
     }
 
+    function addStackedGenderChart(parentElement) {
+        let labels = Object.keys(sectionStats.sections);
+        let males = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            let section = sectionStats.sections[key];
+            arr.push(Math.round(100 * section.stats.numMales / section.stats.numStudents));
+            return arr;
+        }, []);
+        let females = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            let section = sectionStats.sections[key];
+            arr.push(Math.round(100 * section.stats.numFemales / section.stats.numStudents));
+            return arr;
+        }, []);
+        let chart = document.createElement('canvas');
+        chart.width = 3;
+        chart.height = 1;
+        parentElement.appendChild(chart);
+        let context = chart.getContext('2d');
+        new Chart(context, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Females",
+                        data: females,
+                        backgroundColor: 'rgba(255, 60, 10, 0.2)',
+                        borderColor: 'rgba(255, 60, 10, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: "Males",
+                        data: males,
+                        backgroundColor: 'rgba(10, 161, 255, 0.2)',
+                        borderColor: 'rgba(10, 161, 255, 1)',
+                        borderWidth: 1
+                    },
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: "Section Gender Composition (% Female and % Male)",
+                },
+                scales: {
+                    xAxes: [{ stacked: true }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        stacked: true
+                    }]
+                },
+                legend: {
+                    display: false
+                },
+            }
+        });
+    }
+
+    function addAthleteChart(parentElement) {
+        let labels = Object.keys(sectionStats.sections);
+        let athletes = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            let section = sectionStats.sections[key];
+            arr.push(Math.round(100 * section.stats.numAthletes / section.stats.numStudents));
+            return arr;
+        }, []);
+        createSectionChart(parentElement, labels, athletes, "Athlete Balance (% Athletes)");
+    }
+
+
+    function createSectionChart(parentElement, labels, data, title) {
+        let chart = document.createElement('canvas');
+        chart.width = 3;
+        chart.height = 1;
+        parentElement.appendChild(chart);
+        let context = chart.getContext('2d');
+        createChart(context, labels, data, title);
+    }
 
     /** Takes a report object and makes it look nice in html. */
-    function displayReport(report) {
-        // Display allocation charts
-        let allocations_overall_canvas = document.getElementById('allocations_overall_canvas').getContext('2d');
-        let allocations_sortinghat_canvas = document.getElementById('allocations_sortinghat_canvas').getContext('2d');
-        let labels = ['None', 'Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6'];
-        choiceDistributionChart(allocations_overall_canvas, labels, report.allocations.overall, "Allocations (All)");
-        choiceDistributionChart(allocations_sortinghat_canvas, labels, report.allocations.preassigned, "Allocations (Only Pre-Assigned)")
+    function reportResults() {
+        // Run container
+        let parentElement = document.getElementById('run_container');
+
+        // Choice Labels
+        let choice_labels = ['None', 'Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6'];
+
+        // Overall 
+        let overall = calculateAllocationsPerformance(studentStats.assignments, studentStats.students);
+        choiceDistributionChart(parentElement, choice_labels, overall, "Allocations (All)");
+
+        // Preassigned
+        // if (studentStats.stats.preassignedIDs.size > 0) {
+        //     let preassigned = calculateAllocationsPerformance(studentStats.preassigned, studentStats.students);
+        //     choiceDistributionChart(parentElement, choice_labels, preassigned, "Allocations (Only Pre-Assigned)");
+        // }
+
+        // Gender
+        // addGenderCharts(parentElement);
+        addStackedGenderChart(parentElement);
+
+        // Athlete
+        addAthleteChart(parentElement);
     }
 
     /** Returns a string with info from the studentStats object. */
@@ -516,8 +590,13 @@ window.onload = function () {
     }
 
     /** Populates the given canvas with the given distribution, background colors, and border colors. */
-    function choiceDistributionChart(canvas, labels, distribution, title) {
-        return new Chart(canvas, {
+    function choiceDistributionChart(parentElement, labels, distribution, title) {
+        let chart = document.createElement('canvas');
+        chart.width = 3;
+        chart.height = 1;
+        parentElement.appendChild(chart);
+        let context = chart.getContext('2d');
+        return new Chart(chart, {
             type: 'bar',
             data: {
                 labels: labels,
@@ -563,7 +642,7 @@ window.onload = function () {
         });
     }
 
-
+    /** Semi-abstract method for creating a chart. Requires the context to attach the chart to, labels and data, and a title. */
     function createChart(context, labels, data, title, type='bar') {
         return new Chart(context, {
             type: type,
