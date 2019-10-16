@@ -1,6 +1,8 @@
 "use strict";
 
-// TODO: Display 
+// TODO: Store illegalSections as array for each student
+// TODO: Account for illegalSections in modifying preferences
+// TODO: Account for illegalSections in cost matrix
 window.onload = function () {
 
     /** Add event listeners for actionable buttons */
@@ -221,7 +223,7 @@ window.onload = function () {
 
     /** Given a student and a set sectionIDs where:
      *      sectionIDs: the IDs of all sections
-     * Adjust the student's preferences so that every ID in their preferences is unique and present in the sectionIDs set. 
+     * Adjusts the student's preferences so that every ID in their preferences is unique and present in the sectionIDs set. 
      * Returns true if there was an error in the student's preferences, false otherwise.  */
     function adjustStudentPrefErrors(student) {
         let legal = true;
@@ -353,7 +355,7 @@ window.onload = function () {
         if (seat.reserveGender || seat.reserveNonAthlete) {
             if (student === {}) return illegalCost;
             if (seat.reserveGender && seat.gender !== student["Gender"]) return illegalCost;
-            if (seat.reserveNonAthlete && student["Athlete"] == "Y") return illegalCost;  // broken
+            if (seat.reserveNonAthlete && student["Athlete"] == "Y") return illegalCost;
         }
         let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);
         if (prefNum == 0) return defaultCost;
@@ -442,23 +444,7 @@ window.onload = function () {
         createSectionChart(parentElement, labels, data, "Section Popularity");
     }
 
-    // TODO: Complete Gender Charts
-    function addGenderCharts(parentElement) {
-        let labels = Object.keys(sectionStats.sections);
-        let males = Object.keys(sectionStats.sections).reduce((arr, key) => {
-            let section = sectionStats.sections[key];
-            arr.push(Math.round(100 * section.stats.numMales / section.stats.numStudents));
-            return arr;
-        }, []);
-        createSectionChart(parentElement, labels, males, "Gender Balance (% Males)");
-        let females = Object.keys(sectionStats.sections).reduce((arr, key) => {
-            let section = sectionStats.sections[key];
-            arr.push(Math.round(100 * section.stats.numFemales / section.stats.numStudents));
-            return arr;
-        }, []);
-        createSectionChart(parentElement, labels, females, "Gender Balance (% Females)");
-    }
-
+    /** Creates a stacked bar chart depicting the gender balance for every section. */
     function addStackedGenderChart(parentElement) {
         let labels = Object.keys(sectionStats.sections);
         let males = Object.keys(sectionStats.sections).reduce((arr, key) => {
@@ -518,6 +504,7 @@ window.onload = function () {
         });
     }
 
+    /** Creates a bar chart for athlete distribution across sections. */
     function addAthleteChart(parentElement) {
         let labels = Object.keys(sectionStats.sections);
         let athletes = Object.keys(sectionStats.sections).reduce((arr, key) => {
@@ -528,7 +515,7 @@ window.onload = function () {
         createSectionChart(parentElement, labels, athletes, "Athlete Balance (% Athletes)");
     }
 
-
+    /** Creates a chart element under the parent element and populates the chart with the given labels, data, and title. */
     function createSectionChart(parentElement, labels, data, title) {
         let chart = document.createElement('canvas');
         chart.width = 3;
@@ -557,7 +544,6 @@ window.onload = function () {
         // }
 
         // Gender
-        // addGenderCharts(parentElement);
         addStackedGenderChart(parentElement);
 
         // Athlete
