@@ -1,8 +1,5 @@
-"use strict";
+// "use strict";
 
-// TODO: Store illegalSections as array for each student
-// TODO: Account for illegalSections in modifying preferences
-// TODO: Account for illegalSections in cost matrix
 window.onload = function () {
 
     /** Add event listeners for actionable buttons */
@@ -28,12 +25,17 @@ window.onload = function () {
                 IDs: new Set(),
                 duplicateIDs: new Set(),
             },
-            students: {},
-            preassigned: {},
+            students: {},     // key: student ID, value: student
+            preassigned: {},  // key: student ID, value: student
             unassigned: {},   // key: student ID, value: student
-            assignments: {},  // key: student ID, value: section ID
+            assignments: {},  // key: student ID, value: section
         };
     }
+    // function createNewStudent(student) {
+    //     let illegalSections = getIllegalSections(student);
+    //     student["Illegal Sections"] = illegalSections;  // now a new Set()
+    //     return student;
+    // }
 
     /** Track the number of sections, total number of seats, number of distinct professors, etc */
     let sectionStats = {};
@@ -104,37 +106,46 @@ window.onload = function () {
         });
     }
 
+    function type(value) {
+        var regex = /^[object (S+?)]$/;
+        var matches = Object.prototype.toString.call(value).match(regex) || [];
+        
+        return (matches[1] || 'undefined').toLowerCase();
+      }
+    
     /** Updates the student stats object */
     function processStudent(student) {
         let id = student["ID"];
+        // Business
         if (studentStats.stats.IDs.has(id)) {
             studentStats.stats.duplicateIDs.add(id);
+            return;
+        }
+        studentStats.stats.IDs.add(id);
+        student["Illegal Sections"] = getIllegalSections(student);
+        if (adjustStudentPrefErrors(student)) {  // modifies student's preferences if needed
+            studentStats.stats.errorIDs.add(id);
+        }
+        if (student["Placement"] != "") {
+            let sectionNum = student["Placement"];
+            studentStats.stats.preassignedIDs.add(id);
+            studentStats.preassigned[id] = sectionNum;
+            addStudentToSection(student, sectionStats.sections[sectionNum]);
         }
         else {
-            studentStats.stats.IDs.add(id);
-            if (adjustStudentPrefErrors(student)) {  // modifies student's preferences if needed
-                studentStats.stats.errorIDs.add(id);
-            }
-            if (student["Placement"] != "") {
-                let sectionNum = student["Placement"];
-                studentStats.stats.preassignedIDs.add(id);
-                studentStats.preassigned[id] = sectionNum;
-                addStudentToSection(student, sectionStats.sections[sectionNum]);
-            }
-            else {
-                studentStats.unassigned[id] = student;
-            }
-            studentStats.students[id] = student;
-            studentStats.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
-            studentStats.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
-            studentStats.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
-            getPreferenceIDs(student).forEach(sectionID => {  // popularity score
-                let prefNum = getPreferenceNumber(student, sectionID);
-                if (sectionStats.IDs.has(sectionID) && sectionID !== "any") {
-                    sectionStats.sections[sectionID].stats.popularity += 1 / prefNum;
-                }
-            });
+            studentStats.unassigned[id] = student;
         }
+        studentStats.students[id] = student;
+        // Stats
+        studentStats.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
+        studentStats.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
+        studentStats.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+        getPreferenceIDs(student).forEach(sectionID => {  // popularity score
+            let prefNum = getPreferenceNumber(student, sectionID);
+            if (sectionStats.IDs.has(sectionID) && sectionID !== "any") {
+                sectionStats.sections[sectionID].stats.popularity += 1 / prefNum;
+            }
+        });
     }
 
     /** Adds the given student to the given section by adding the sectionID to the the studentStats.assignments object,
@@ -221,6 +232,20 @@ window.onload = function () {
         document.getElementById("save_as").disabled = false;
     }
 
+    /** Returns a set of section IDs from the student's 'Illegal Sections'. " */
+    function getIllegalSections(student) {
+        let illegalIDs = new Set();
+        let illegal_str = student["Illegal Sections"];
+        let sectionIDs = illegal_str.replace(' ', '').replace('"', '').split(',');
+        sectionIDs.forEach(id => {
+            if (sectionStats.IDs.has(id)) {
+                illegalIDs.add(id);
+            }
+        });
+        return illegalIDs;
+    }
+    
+
     /** Given a student and a set sectionIDs where:
      *      sectionIDs: the IDs of all sections
      * Adjusts the student's preferences so that every ID in their preferences is unique and present in the sectionIDs set. 
@@ -232,7 +257,7 @@ window.onload = function () {
         let dup = new Set();
         for (let i = 0; i < prefIDs.length; i++) {
             let currID = prefIDs[i];
-            if (dup.has(currID) || !sectionStats.IDs.has(currID)) legal = false;
+            if (dup.has(currID) || !sectionStats.IDs.has(currID) || student["Illegal Sections"].has(currID)) legal = false;
             else arr.push(currID);
             dup.add(currID);
         }
@@ -325,7 +350,6 @@ window.onload = function () {
         return seatsArray;
     }
 
-
     /** Constructs the cost matrix based on user-input parameters and the students/sections arrays. Returns a matrix of
      * weights which represent the cost of assigning the student (represented by a row) to a seat in a class
      * (represented by individual columns, stacked sequentially). */
@@ -348,7 +372,6 @@ window.onload = function () {
         return matrix;
     }
 
-
     /** Returns the cost associated with assigning the given student to the given section. Encodes information about
      * the maximum class size, minimum gender ratios, and maximum athlete ratio into the seats for each section*/
     function getStudentCostForSeat(student, seat) {
@@ -357,8 +380,10 @@ window.onload = function () {
             if (seat.reserveGender && seat.gender !== student["Gender"]) return illegalCost;
             if (seat.reserveNonAthlete && student["Athlete"] == "Y") return illegalCost;
         }
+        if (student === {}) return defaultCost;
         let prefNum = getPreferenceNumber(student, seat.section["Core Section #"]);
         if (prefNum == 0) return defaultCost;
+        if (prefNum == -1) return illegalCost;
         return Math.pow(costBase, prefNum);
     }
 
@@ -366,6 +391,15 @@ window.onload = function () {
      * section is not in the student's preferences, then the function returns 0. Note: students are allowed six
      * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
     function getPreferenceNumber(student, sectionID) {
+        try {
+            let illegal = student["Illegal Sections"];
+            if (illegal.has(sectionID)) {
+                return -1;
+            }
+        }
+        catch (e) {
+            // console.log(student);  // probably undefined
+        }
         for (let i = 1; i < 7; i++) {
             if (student["Choice " + i] === sectionID || student["Choice " + i] === "any") {
                 return i;
@@ -452,9 +486,8 @@ window.onload = function () {
             arr.push(Math.round(100 * section.stats.numMales / section.stats.numStudents));
             return arr;
         }, []);
-        let females = Object.keys(sectionStats.sections).reduce((arr, key) => {
-            let section = sectionStats.sections[key];
-            arr.push(Math.round(100 * section.stats.numFemales / section.stats.numStudents));
+        let females = males.reduce((arr, amt) => {
+            arr.push(100 - amt);
             return arr;
         }, []);
         let chart = document.createElement('canvas');
@@ -649,7 +682,9 @@ window.onload = function () {
                 scales: {
                     yAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            suggestedMax: 100,
                         }
                     }]
                 },
@@ -666,6 +701,9 @@ window.onload = function () {
         // Convert the allocations object to an array
         let results = ["Student ID,Core Section #"];  // Headers
         Object.keys(studentStats.assignments).forEach(function (key, _) {
+            if (studentStats.students[key]["Illegal Sections"].has(studentStats.assignments[key])) {
+                console.log(studentStats.students[key]);
+            }
             results.push(key + "," + studentStats.assignments[key]);
         });
         let data = results.join("\n");

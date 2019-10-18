@@ -21,9 +21,7 @@ Click the "Choose file" button under the students tab to upload a csv containing
 * "ID" - a unique identifier for a student
 * "Gender" - the student's gender. Must be one of "M" or "F" (Working on adding additional options)
 * "Athlete" - indicates if the student is involved with an athletics program. Should be "Y" if the student is an athlete
-* "Sport" - a list of the sports the student is involved in. The list should be space-separated and each sport should be a single word. Ex: if a student plays basketball and baseball, this section would look like "basketball baseball". 
-* "Choice 1" - the ID of the student's top class choice
-* "Choice 2", "Choice 3", ..., "Choice 6" - the student's 2nd through 6th class choices. All different columns.
+* "Choice 1", "Choice 2", ..., "Choice 6" - the Core Section # of the student's top choices.
 
 Additionally, the following headers are also supported:
 * "Placement" - the ID of a section for which the student is to be allocated. This allows the user to make course allocations prior to running SortingHat.
@@ -35,16 +33,15 @@ Other headers and columns are permitted to be in the student csv file, but the p
 
 ### Step 3: Set Minimum Gender Ratios
 
-SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such aspect is the ability to set the minimum gender ratio for males/females in any section. By moving the sliders users can set the minimum percentage of males or females that each section should be composed of. 
+SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such aspect is the ability to set rough minimum gender ratio for males/females in any section. By moving the sliders users can set a rough minimum percentage of males or females that each section should be composed of. Note that these are rough minimums -- because these are percentages and the number of students allowed in a class is a whole number, the actual results are not guaranteed to match exactly. Some tinkering may be required to get these exactly right. Fortunately, SortingHat reports the gender distribution outcome of each section, so you will know exactly which sections require additional attention.
 
 ### Step 4: Set Maximum Athlete Ratio
 
-Users are also given the option of controlling the maximum percentage of student-athletes in a section by adjusting the Athlete slider. Users should note that this feature is currently buggy and thus it is advised to leave it at 100%.
-
+Users are also given the option of controlling the maximum percentage of student-athletes in a section by adjusting the Athlete slider. Note that this is not an exact guarantee, but it get very close to your target almost all of the time. SortingHat also reports the athlete distribution of individual sections after running so you can see the exact problem areas.
 
 ### Step 5: Run the Program
 
-Click the "Run" button to run the program. This typically takes less than 10 seconds, but may the time taken will vary based on the number of students and sections provided. Upon determining an optimal allocation the program will output a brief summary of the results below the page. If these results are not satisfactory, you may try running the program again with slightly different gender or athlete ratios. 
+Click the "Run" button to run the program. This typically takes less than 10 seconds, but may the time taken will vary based on the number of students and sections provided. Upon determining an optimal allocation the program will output a brief summary of the results below the page. If the results are not satisfactory, you may try tinkering with the sliders until the results are more acceptable, or use the information provided by the charts to manually adjust the results. At it's current state SortingHat requires that you reload the page in order to rerun with different settings. 
 
 ### Step 6: Save the Results
 
