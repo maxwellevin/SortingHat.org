@@ -31,11 +31,11 @@ window.onload = function () {
             assignments: {},  // key: student ID, value: section
         };
     }
-    function createNewStudent(student) {
-        let illegalSections = getIllegalSections(student);
-        student["Illegal Sections"] = illegalSections;  // now a new Set()
-        return student;
-    }
+    // function createNewStudent(student) {
+    //     let illegalSections = getIllegalSections(student);
+    //     student["Illegal Sections"] = illegalSections;  // now a new Set()
+    //     return student;
+    // }
 
     /** Track the number of sections, total number of seats, number of distinct professors, etc */
     let sectionStats = {};
@@ -394,7 +394,6 @@ window.onload = function () {
         try {
             let illegal = student["Illegal Sections"];
             if (illegal.has(sectionID)) {
-                console.log(sectionID);
                 return -1;
             }
         }
@@ -702,6 +701,9 @@ window.onload = function () {
         // Convert the allocations object to an array
         let results = ["Student ID,Core Section #"];  // Headers
         Object.keys(studentStats.assignments).forEach(function (key, _) {
+            if (studentStats.students[key]["Illegal Sections"].has(studentStats.assignments[key])) {
+                console.log(studentStats.students[key]);
+            }
             results.push(key + "," + studentStats.assignments[key]);
         });
         let data = results.join("\n");
