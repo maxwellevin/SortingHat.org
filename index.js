@@ -59,6 +59,8 @@ window.onload = function () {
                 numMales: 0,
                 numFemales: 0,
                 numAthletes: 0,
+                numMaleAthletes: 0,
+                numFemaleAthletes: 0,
                 popularity: 0,
             },
             students: new Set(),
@@ -106,12 +108,6 @@ window.onload = function () {
         });
     }
 
-    function type(value) {
-        var regex = /^[object (S+?)]$/;
-        var matches = Object.prototype.toString.call(value).match(regex) || [];
-        
-        return (matches[1] || 'undefined').toLowerCase();
-      }
     
     /** Updates the student stats object */
     function processStudent(student) {
@@ -155,12 +151,14 @@ window.onload = function () {
         // Necessary stuff
         studentStats.assignments[student["ID"]] = section["Core Section #"];
         section.students.add(student["ID"]);
-        section["Student Cap"] -= 1;
+        // section["Student Cap"] -= 1;
         // Stats
         section.stats.numStudents++;
         section.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
         section.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
         section.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
+        section.stats.numMaleAthletes += (student["Gender"] == "M" && student["Athlete"] == "Y") ? 1 : 0;
+        section.stats.numFemaleAthletes += (student["Gender"] == "F" && student["Athlete"] == "Y") ? 1 : 0;
     }
 
     /** Handles the section csv file uploading. */
@@ -278,8 +276,33 @@ window.onload = function () {
         Object.keys(sectionsObj).forEach(function (key, _) {
             let currentSection = sectionsObj[key];
 
+            let f_percent = getFemaleRatioInput();
+            let m_percent = getMaleRatioInput();
+            let a_percent = getAthleteRatioInput();
+
+            let pF = currentSection.stats.numFemales;
+            let pFa = currentSection.stats.numFemaleAthletes;
+            let pM = currentSection.stats.numMales;
+            let pMa = currentSection.stats.numMaleAthletes;
+
+            let N = currentSection["Student Cap"];  // should be the original cap
+
+            let F = f_percent * N;
+            let F_all = Math.round(F - pF);
+            let nAf = Math.round(F * (1 - a_percent) - pFa);
+            let Af = F_all - nAf;
+
+            let M = m_percent * N;
+            let M_all = Math.round(M - pM);
+            let nAm = Math.round(M * (1 - a_percent) - pMa);
+            let Am = M_all - nAm;
+
+            let G = Math.round(N - F - M);
+            let nAg = Math.round(G*(1 - a_percent) - pFa - pMa);
+            let Ag = N - (nAf + Af + nAm + Am + nAg) - currentSection.stats.numStudents;
+
             // Total number of seats in this section
-            let numSeats = currentSection["Student Cap"];
+            let numSeats = currentSection["Student Cap"] - currentSection.stats.numStudents;
 
             // Total number of seats to be allocated for male, female, non-gendered
             let numMaleSeats = Math.round(numSeats * getMaleRatioInput());
@@ -291,64 +314,30 @@ window.onload = function () {
             let numFemaleNonAthleteSeats = Math.round(numFemaleSeats * (1 - getAthleteRatioInput()));
             let numNonGenderedNonAthleteSeats = Math.round(numNonGenderedSeats * (1 - getAthleteRatioInput()));
 
-            // Reserve seats for male students
-            for (let i = 0; i < numMaleNonAthleteSeats; i++) {
-                seatsArray.push({
-                    reserveGender: true,  // Check other parameters
-                    gender: "M",  // Gender of the student to take this seat
-                    reserveNonAthlete: true, // Reserve the seat for a non-athlete student
-                    section: currentSection  // The section containing this seat
-                });
-            }
-            for (let i = 0; i < numMaleSeats - numMaleNonAthleteSeats; i++) {
-                seatsArray.push({
-                    reserveGender: true,
-                    gender: "M",
-                    reserveNonAthlete: false,
-                    section: currentSection
-                });
-            }
-
-            // Reserve seats for female students
-            for (let i = 0; i < numFemaleNonAthleteSeats; i++) {
-                seatsArray.push({
-                    reserveGender: true,
-                    gender: "F",
-                    reserveNonAthlete: true,
-                    section: currentSection
-                });
-            }
-            for (let i = 0; i < numFemaleSeats - numFemaleNonAthleteSeats; i++) {
-                seatsArray.push({
-                    reserveGender: true,
-                    gender: "F",
-                    reserveNonAthlete: false,
-                    section: currentSection
-                });
-            }
-
-            // Add seats not reserved by gender, but partially reserved for non-athletes
-            for (let i = 0; i < numNonGenderedNonAthleteSeats; i++) {
-                seatsArray.push({
-                    reserveGender: false,
-                    gender: "",
-                    reserveNonAthlete: true,
-                    section: currentSection
-                });
-            }
-            for (let i = 0; i < numNonGenderedSeats - numNonGenderedNonAthleteSeats; i++) {
-                seatsArray.push({
-                    reserveGender: false,
-                    gender: "",
-                    reserveNonAthlete: false,
-                    section: currentSection
-                });
-            }
+            // Add seats for Males
+            pushSeats(seatsArray, numMaleNonAthleteSeats, {reserveGender: true, gender: "M", reserveNonAthlete: true, section: currentSection});
+            pushSeats(seatsArray, numMaleSeats - numMaleNonAthleteSeats, {reserveGender: true, gender: "M", reserveNonAthlete: false, section: currentSection});
+            
+            // Add seats for Females
+            pushSeats(seatsArray, numFemaleNonAthleteSeats, {reserveGender: true, gender: "F", reserveNonAthlete: true, section: currentSection});
+            pushSeats(seatsArray, numFemaleSeats - numFemaleNonAthleteSeats, {reserveGender: true, gender: "F", reserveNonAthlete: false, section: currentSection});
+            
+            // Add remaining seats
+            pushSeats(seatsArray, numNonGenderedNonAthleteSeats, {reserveGender: false, gender: "", reserveNonAthlete: true, section: currentSection});
+            pushSeats(seatsArray, numNonGenderedSeats - numNonGenderedNonAthleteSeats, {reserveGender: false, gender: "", reserveNonAthlete: false, section: currentSection});
         });
 
         // Return the seats array
         return seatsArray;
     }
+
+
+    function pushSeats(seatArr, numSeats, seatObj) {
+        for (let i = 0; i < numSeats; i++) {
+            seatArr.push(seatObj);
+        }
+    }
+
 
     /** Constructs the cost matrix based on user-input parameters and the students/sections arrays. Returns a matrix of
      * weights which represent the cost of assigning the student (represented by a row) to a seat in a class
