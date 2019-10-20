@@ -1,5 +1,5 @@
 # SortingHat.org
-Sort students into classes with the cutting edge interface <a href="http://www.SortingHat.org">SortingHat</a>
+Sort students into classes with the cutting edge interface <a href="http://www.SortingHat.org">SortingHat</a>.
 
 
 ## Instructions
@@ -21,13 +21,9 @@ Click the "Choose file" button under the students tab to upload a csv containing
 * "ID" - a unique identifier for a student
 * "Gender" - the student's gender. Must be one of "M" or "F" (Working on adding additional options)
 * "Athlete" - indicates if the student is involved with an athletics program. Should be "Y" if the student is an athlete
-* "Choice 1", "Choice 2", ..., "Choice 6" - the Core Section # of the student's top choices.
-
-Additionally, the following headers are also supported:
-* "Placement" - the ID of a section for which the student is to be allocated. This allows the user to make course allocations prior to running SortingHat.
-* "Previous Instructor" - the ID of a previous instructor (used to prevent students from taking a class with a previous instructor of theirs).
-* "Illegal Sections" - a list of sections that the student is not allowed to take. If "Previous Instructor" is specified,
-this includes all the courses the instructor is teaching by default. If additional courses are specified,these are added to the student's list of illegal course allocations. It is highly unlikely that a student will be placed in an illegal section.
+* "Choice 1", "Choice 2", ..., "Choice 6" - the Core Section #s of the student's top choices.
+* "Placement" - the Core Section # of the section the student has been assigned to. This allows the user to make course allocations prior to running SortingHat. 
+* "Illegal Sections" - a list of Core Section #s that the student is not allowed to take.  It is highly unlikely that a student will be placed in an illegal section. The list may contain as many Core Section #s as you want as long as they are enclosed in quotes and separated by commas. Ex: "Core-19, Core-20" is valid, but "Core-19 Core-20" is not.
 
 Other headers and columns are permitted to be in the student csv file, but the program will not be able to use data from columns that have headers named something other than what is specified above.
 
@@ -41,7 +37,7 @@ Users are also given the option of controlling the maximum percentage of student
 
 ### Step 5: Run the Program
 
-Click the "Run" button to run the program. This typically takes less than 10 seconds, but may the time taken will vary based on the number of students and sections provided. Upon determining an optimal allocation the program will output a brief summary of the results below the page. If the results are not satisfactory, you may try tinkering with the sliders until the results are more acceptable, or use the information provided by the charts to manually adjust the results. At it's current state SortingHat requires that you reload the page in order to rerun with different settings. 
+Click the "Run" button to run the program. This typically takes less than 10 seconds, but may the time taken will vary based on the number of students and sections provided. Upon determining an optimal allocation the program will output a brief summary of the results below the page. If the results are not satisfactory, you may try tinkering with the sliders until the results are more acceptable, or use the information provided by the charts to manually adjust the results. At it's current state SortingHat requires that you reload the page in order to run the program again with different settings. 
 
 ### Step 6: Save the Results
 
