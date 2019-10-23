@@ -2,6 +2,7 @@
 
 body {
     width: 80%;
+    max-width: 1200px;
     margin: auto;
     float: top;
     font-size: 12pt;
@@ -20,8 +21,6 @@ h1 {
 }
 
 #Controls {
-    width: 95%;
-    max-width: 1200px;
     position: relative;
     margin: auto;
     background-color: rgba(200, 215, 225, 0.4);
