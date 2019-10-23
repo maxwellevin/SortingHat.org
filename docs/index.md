@@ -4,8 +4,9 @@ subtitle: Welcome to the docs!
 layout: default
 ---
 
-# SortingHat.org
-Sort students into classes with the cutting edge interface <a href="http://www.SortingHat.org">SortingHat</a>.
+Welcome to the SortingHat docs! Here you'll find instructions on how to run the program as well as what kind of outputs you should expect to see. 
+
+To report a problem, view the source code, or submit a pull request, checkout the [github repo](https://github.com/1800Blarbo/SortingHat.org).
 
 
 ## Instructions
@@ -55,3 +56,4 @@ When the results are satisfactory, click on the "Save" button to save the result
 In the future, the following headers may be made available:
 
 * "Choice" - an integer (1 - 6) indicating which choice of section the student received. If empty, the student was allocated to a section not in their preferences. This can happen when a student does not list sufficient preferences or when a student's preferences are all illegal.
+
