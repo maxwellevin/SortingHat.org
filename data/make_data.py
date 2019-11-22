@@ -2,21 +2,23 @@ import pandas as pd
 import random
 
 # Settings
-num_sections = 35
+num_sections = 20
 seats_per_section = 20
-num_students = 693
-section_filename = "py_sections_1.csv"
-student_filename = "py_students_1.csv"
+num_students = 397
+section_filename = "example_sections_file.csv"
+student_filename = "example_students_file.csv"
+
+possible_profs = ["Allen", "Babbage", "Cook", "Demaine", "Easley", "Floyd", "Gates", "Hamilton", "Hirschberg", "Kam Ho", "Hopper", "Irwin", "Jurafsky", "Knuth", "Lovelace", "Minsky", "Ng", "Norvig", "Neumann", "O'Sullivan", "Page", "Reddy", "Shannon", "Torvalds", "Ullman", "Viterbi", "Wozniak", "Yannakakis", "Zilberstein"]
 
 # Create Section Data
-core_section_numbers = ["Section-" + str(i+1) for i in range(num_sections)]
-professors = [chr(ord("A") + i)*3 for i in range(num_sections)]
+core_section_numbers = [f"Section-{i+1}" for i in range(num_sections)]
+professors = [random.choice(possible_profs) for i in range(num_sections)]
 student_caps = [seats_per_section for _ in range(num_sections)]
 
 # Create DataFrame
 sections = pd.DataFrame(data=[{  
     "Core Section #": core_section_numbers[i],
-    "Professor": professors[i],
+    "Professor": random.choice(possible_profs),
     "Student Cap": student_caps[i]
 } for i in range(num_sections)])
 
@@ -34,11 +36,9 @@ choice6 = [random.choice(tuple(core_section_numbers - {choice1[i], choice2[i], c
 students = pd.DataFrame(data=[{
     "Placement": random.choice((choice1[i], choice2[i], choice3[i])) if random.random() > 0.90 else "",
     "ID": str(i),
-    "Gender": "F" if random.random() > 0.40 else "M",
+    "Sex": "F" if random.random() > 0.40 else "M",
     "Athlete": "Y" if random.random() > 0.75 else "",
-    "Sport": "", 
-    "Previous Instructor": "", 
-    "Illegal Sections": "", 
+    "Illegal Sections": f"{random.choice(tuple(core_section_numbers))}, {random.choice(tuple(core_section_numbers))}" if random.random() > 0.4 else "", 
     "Choice 1": choice1[i],
     "Choice 2": choice2[i],
     "Choice 3": choice3[i],

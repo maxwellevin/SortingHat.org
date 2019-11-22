@@ -1,4 +1,4 @@
-Placement,ID,Gender,Athlete,Sport,Previous Instructor,Illegal Sections,Choice 1,Choice 2,Choice 3,Choice 4,Choice 5,Choice 6
+Placement,ID,Sex,Athlete,Sport,Previous Instructor,Illegal Sections,Choice 1,Choice 2,Choice 3,Choice 4,Choice 5,Choice 6
 ,0,F,,,,,Section-8,Section-15,Section-12,Section-21,Section-20,Section-3
 ,1,F,,,,,Section-14,Section-33,Section-29,Section-3,Section-1,Section-28
 ,2,F,,,,,Section-8,Section-20,Section-33,Section-29,Section-25,Section-15

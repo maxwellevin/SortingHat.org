@@ -17,7 +17,7 @@ window.onload = function () {
                 numPreAssigned: 0,
                 numMales: 0,
                 numFemales: 0,
-                numGenderErrors: 0,
+                numSexErrors: 0,
                 numAthletes: 0,
                 numPreferenceErrors: 0,
                 preassignedIDs: new Set(),
@@ -137,8 +137,8 @@ window.onload = function () {
         }
         studentStats.students[id] = student;
         // Stats
-        studentStats.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
-        studentStats.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
+        studentStats.stats.numMales += (student["Sex"] == "M") ? 1 : 0;
+        studentStats.stats.numFemales += (student["Sex"] == "F") ? 1 : 0;
         studentStats.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
         getPreferenceIDs(student).forEach(sectionID => {  // popularity score
             let prefNum = getPreferenceNumber(student, sectionID);
@@ -158,8 +158,8 @@ window.onload = function () {
         section["Student Cap"] -= 1;
         // Stats
         section.stats.numStudents++;
-        section.stats.numMales += (student["Gender"] == "M") ? 1 : 0;
-        section.stats.numFemales += (student["Gender"] == "F") ? 1 : 0;
+        section.stats.numMales += (student["Sex"] == "M") ? 1 : 0;
+        section.stats.numFemales += (student["Sex"] == "F") ? 1 : 0;
         section.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
     }
 
@@ -267,8 +267,8 @@ window.onload = function () {
 
     // TODO: Account for preassigned students! (At least male/female. Athletes might be more tricky)
     /** Builds an object to hold an array of seats. Each seat has three main properties:
-     * reserved: true if the seat is reserved for a specific gender of student, false otherwise.
-     * gender: Either "M", "F", or "". Indicates the gender of student that the seat is reserved for.
+     * reserved: true if the seat is reserved for a specific sex of student, false otherwise.
+     * sex: Either "M", "F", or "". Indicates the sex of student that the seat is reserved for.
      * section: A string which identifies the section this seat belongs to. */
     function buildSeatObjects(sectionsObj) {
         // Define a seats array
@@ -281,29 +281,29 @@ window.onload = function () {
             // Total number of seats in this section
             let numSeats = currentSection["Student Cap"];
 
-            // Total number of seats to be allocated for male, female, non-gendered
+            // Total number of seats to be allocated for male, female, non-sexed
             let numMaleSeats = Math.round(numSeats * getMaleRatioInput());
             let numFemaleSeats = Math.round(numSeats * getFemaleRatioInput());
-            let numNonGenderedSeats = numSeats - numMaleSeats - numFemaleSeats;
+            let numNonSexedSeats = numSeats - numMaleSeats - numFemaleSeats;
 
-            // Number of non-athletes seats to be allocated for male, female, non-gendered
+            // Number of non-athletes seats to be allocated for male, female, non-sexed
             let numMaleNonAthleteSeats = Math.round(numMaleSeats * (1 - getAthleteRatioInput()));
             let numFemaleNonAthleteSeats = Math.round(numFemaleSeats * (1 - getAthleteRatioInput()));
-            let numNonGenderedNonAthleteSeats = Math.round(numNonGenderedSeats * (1 - getAthleteRatioInput()));
+            let numNonSexedNonAthleteSeats = Math.round(numNonSexedSeats * (1 - getAthleteRatioInput()));
 
             // Reserve seats for male students
             for (let i = 0; i < numMaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserveGender: true,  // Check other parameters
-                    gender: "M",  // Gender of the student to take this seat
+                    reserveSex: true,  // Check other parameters
+                    sex: "M",  // Sex of the student to take this seat
                     reserveNonAthlete: true, // Reserve the seat for a non-athlete student
                     section: currentSection  // The section containing this seat
                 });
             }
             for (let i = 0; i < numMaleSeats - numMaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserveGender: true,
-                    gender: "M",
+                    reserveSex: true,
+                    sex: "M",
                     reserveNonAthlete: false,
                     section: currentSection
                 });
@@ -312,34 +312,34 @@ window.onload = function () {
             // Reserve seats for female students
             for (let i = 0; i < numFemaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserveGender: true,
-                    gender: "F",
+                    reserveSex: true,
+                    sex: "F",
                     reserveNonAthlete: true,
                     section: currentSection
                 });
             }
             for (let i = 0; i < numFemaleSeats - numFemaleNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserveGender: true,
-                    gender: "F",
+                    reserveSex: true,
+                    sex: "F",
                     reserveNonAthlete: false,
                     section: currentSection
                 });
             }
 
-            // Add seats not reserved by gender, but partially reserved for non-athletes
-            for (let i = 0; i < numNonGenderedNonAthleteSeats; i++) {
+            // Add seats not reserved by sex, but partially reserved for non-athletes
+            for (let i = 0; i < numNonSexedNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserveGender: false,
-                    gender: "",
+                    reserveSex: false,
+                    sex: "",
                     reserveNonAthlete: true,
                     section: currentSection
                 });
             }
-            for (let i = 0; i < numNonGenderedSeats - numNonGenderedNonAthleteSeats; i++) {
+            for (let i = 0; i < numNonSexedSeats - numNonSexedNonAthleteSeats; i++) {
                 seatsArray.push({
-                    reserveGender: false,
-                    gender: "",
+                    reserveSex: false,
+                    sex: "",
                     reserveNonAthlete: false,
                     section: currentSection
                 });
@@ -373,11 +373,11 @@ window.onload = function () {
     }
 
     /** Returns the cost associated with assigning the given student to the given section. Encodes information about
-     * the maximum class size, minimum gender ratios, and maximum athlete ratio into the seats for each section*/
+     * the maximum class size, minimum sex ratios, and maximum athlete ratio into the seats for each section*/
     function getStudentCostForSeat(student, seat) {
-        if (seat.reserveGender || seat.reserveNonAthlete) {
+        if (seat.reserveSex || seat.reserveNonAthlete) {
             if (student === {}) return illegalCost;
-            if (seat.reserveGender && seat.gender !== student["Gender"]) return illegalCost;
+            if (seat.reserveSex && seat.sex !== student["Sex"]) return illegalCost;
             if (seat.reserveNonAthlete && student["Athlete"] == "Y") return illegalCost;
         }
         if (student === {}) return defaultCost;
@@ -478,8 +478,8 @@ window.onload = function () {
         createSectionChart(parentElement, labels, data, "Section Popularity");
     }
 
-    /** Creates a stacked bar chart depicting the gender balance for every section. */
-    function addStackedGenderChart(parentElement) {
+    /** Creates a stacked bar chart depicting the sex balance for every section. */
+    function addStackedSexChart(parentElement) {
         let labels = Object.keys(sectionStats.sections);
         let males = Object.keys(sectionStats.sections).reduce((arr, key) => {
             let section = sectionStats.sections[key];
@@ -519,7 +519,7 @@ window.onload = function () {
             options: {
                 title: {
                     display: true,
-                    text: "Section Gender Composition (% Female and % Male)",
+                    text: "Section Sex Composition (% Female and % Male)",
                 },
                 scales: {
                     xAxes: [{ stacked: true }],
@@ -576,8 +576,8 @@ window.onload = function () {
         //     choiceDistributionChart(parentElement, choice_labels, preassigned, "Allocations (Only Pre-Assigned)");
         // }
 
-        // Gender
-        addStackedGenderChart(parentElement);
+        // Sex
+        addStackedSexChart(parentElement);
 
         // Athlete
         addAthleteChart(parentElement);
