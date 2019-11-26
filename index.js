@@ -1,4 +1,7 @@
 // "use strict";
+// TODO: Allow program to be rerun without reload (Remove charts, reset variables, perhaps add reset button)
+// TODO: Use promises for seat-building to improve program responsiveness
+// TODO: Add more student data to saved csv file
 
 window.onload = function () {
 
