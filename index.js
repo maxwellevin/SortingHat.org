@@ -2,11 +2,31 @@
 
 window.onload = function () {
 
+    /** DOM handles */
+    let upload_student_button = document.getElementById("upload_student");
+    let upload_section_button = document.getElementById("upload_section");
+    let run_button = document.getElementById("run");
+    let save_button = document.getElementById("save_as");
+    let students_container = document.getElementById("students_container");
+    let sections_container = document.getElementById("sections_container");
+    let run_container = document.getElementById('run_container');
+
     /** Add event listeners for actionable buttons */
-    document.getElementById("upload_student").onchange = handleStudentFile;
-    document.getElementById("upload_section").onchange = handleSectionFile;
-    document.getElementById("run").onclick = runProgram;
-    document.getElementById("save_as").onclick = saveResults;
+    upload_student_button.onchange = handleStudentFile;
+    upload_section_button.onchange = handleSectionFile;
+    run_button.onclick = runProgram;
+    save_button.onclick = saveResults;
+
+
+    /** Boolean values to track handling of students and sections. */
+    let studentsHandled = false;
+    let sectionsHandled = false;
+
+    /** Define parameters for the cost matrix. */
+    let costBase = 3.5;
+    let defaultCost = Math.pow(costBase, 7);
+    let illegalCost = Math.pow(costBase, 9);
+
 
     /** Track the number of students, number of males, number of females, top section choices, etc */
     let studentStats = {};
@@ -31,11 +51,6 @@ window.onload = function () {
             assignments: {},  // key: student ID, value: section
         };
     }
-    // function createNewStudent(student) {
-    //     let illegalSections = getIllegalSections(student);
-    //     student["Illegal Sections"] = illegalSections;  // now a new Set()
-    //     return student;
-    // }
 
     /** Track the number of sections, total number of seats, number of distinct professors, etc */
     let sectionStats = {};
@@ -65,22 +80,13 @@ window.onload = function () {
         };
     }
 
-    /** Boolean values to track handling of students and sections. */
-    let studentsHandled = false;
-    let sectionsHandled = false;
-
-    /** Define parameters for the cost matrix. */
-    let costBase = 3.5;
-    let defaultCost = Math.pow(costBase, 7);
-    let illegalCost = Math.pow(costBase, 9);
-
 
     /** Handles the student csv file uploading. */
     function handleStudentFile() {
         studentStats = resetStudentStatistics();
         studentsHandled = false;
         handleRunButton();
-        let file = document.getElementById("upload_student").files[0];
+        let file = upload_student_button.files[0];
         Papa.parse(file, {
             header: true,
             skipEmptyLines: 'greedy',
@@ -98,20 +104,14 @@ window.onload = function () {
                 studentStats.stats.numPreAssigned = studentStats.stats.preassignedIDs.size;
                 studentStats.stats.numPreferenceErrors = studentStats.stats.errorIDs.size;
                 // Add stats to page
-                addStatsToElement(document.getElementById("students_container"), getInitialStudentStatsString());  // Text-stats
-                addPopularityChart(document.getElementById("students_container"))
+                addStatsToElement(students_container, getInitialStudentStatsString());  // Text-stats
+                addPopularityChart(students_container)
                 studentsHandled = true;
                 handleRunButton();  // checks to see if sections are handled too
             }
         });
     }
 
-    function type(value) {
-        var regex = /^[object (S+?)]$/;
-        var matches = Object.prototype.toString.call(value).match(regex) || [];
-        
-        return (matches[1] || 'undefined').toLowerCase();
-      }
     
     /** Updates the student stats object */
     function processStudent(student) {
@@ -168,7 +168,7 @@ window.onload = function () {
         sectionStats = resetSectionStatistics();
         sectionsHandled = false;
         handleRunButton();
-        let file = document.getElementById("upload_section").files[0];
+        let file = upload_section_button.files[0];
         Papa.parse(file, {
             header: true,
             dynamicTyping: true,
@@ -183,9 +183,9 @@ window.onload = function () {
                 processSection(section);                
             },
             complete: function (results, file) {
-                addStatsToElement(document.getElementById("sections_container"), getInitialSectionStatsString());
+                addStatsToElement(sections_container, getInitialSectionStatsString());
                 sectionsHandled = true;
-                document.getElementById("upload_student").disabled = false;
+                upload_student_button.disabled = false;
                 handleRunButton();  // checks to see if students are handled too
             }
         });
@@ -208,16 +208,16 @@ window.onload = function () {
 
     /** Toggles the state of the 'run' button based on the states of studentsHandled and sectionsHandled. */
     function handleRunButton() {
-        document.getElementById("save_as").disabled = true;
-        document.getElementById("run").disabled = !(studentsHandled && sectionsHandled);
+        save_button.disabled = true;
+        run_button.disabled = !(studentsHandled && sectionsHandled);
     }
 
 
     /** Runs the program; filters out preassigned students, build seats for the remaining students, runs the algorithm
      * on unassigned students, combines the results, and displays a report of the results to the user. */
     function runProgram() {
-        document.getElementById("run").disabled = true;
-        document.getElementById("save_as").disabled = false;
+        run_button.disabled = true;
+        save_button.disabled = false;
 
         // Do algorithm stuff
         let seats = buildSeatObjects(sectionStats.sections);  // now uses the provided section to build seats
@@ -228,8 +228,8 @@ window.onload = function () {
         // Display result stats to the user
         reportResults();
 
-        document.getElementById("run").disabled = false;
-        document.getElementById("save_as").disabled = false;
+        run_button.disabled = false;
+        save_button.disabled = false;
     }
 
     /** Returns a set of section IDs from the student's 'Illegal Sections'. " */
@@ -560,27 +560,11 @@ window.onload = function () {
 
     /** Takes a report object and makes it look nice in html. */
     function reportResults() {
-        // Run container
-        let parentElement = document.getElementById('run_container');
-
-        // Choice Labels
         let choice_labels = ['None', 'Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6'];
-
-        // Overall 
         let overall = calculateAllocationsPerformance(studentStats.assignments, studentStats.students);
-        choiceDistributionChart(parentElement, choice_labels, overall, "Allocations (All)");
-
-        // Preassigned
-        // if (studentStats.stats.preassignedIDs.size > 0) {
-        //     let preassigned = calculateAllocationsPerformance(studentStats.preassigned, studentStats.students);
-        //     choiceDistributionChart(parentElement, choice_labels, preassigned, "Allocations (Only Pre-Assigned)");
-        // }
-
-        // Sex
-        addStackedSexChart(parentElement);
-
-        // Athlete
-        addAthleteChart(parentElement);
+        choiceDistributionChart(run_container, choice_labels, overall, "Allocations (All)");
+        addStackedSexChart(run_container);
+        addAthleteChart(run_container);
     }
 
     /** Returns a string with info from the studentStats object. */
