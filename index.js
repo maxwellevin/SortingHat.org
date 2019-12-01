@@ -117,7 +117,20 @@ window.onload = function () {
     }
 
     
-    /** Updates the student stats object */
+    /** 
+     * Handles processing of a student during csv parsing stage.
+     * 
+     * During the 'business' phase:
+     * 1. Detects and handles duplicate student IDs 
+     * 2. Handles illegal student preferences and modifies student["Illegal Sections"] to be an object
+     * 3. Handles pre-assigned students
+     * 4. Adds the student to a list of all students
+     * 
+     * During the 'stats' phase:
+     * 1. Updates the overall number of students, males, females, and athletes
+     * 2. Updates the section popularity statistics with the student's preferences 
+     * 
+    */
     function processStudent(student) {
         let id = student["ID"];
         // Business
@@ -195,7 +208,15 @@ window.onload = function () {
         });
     }
 
-    /** Updates the section stats object */
+    /** 
+     * Handles processing of a section during csv parsing stage.
+     * 
+     * Notable actions:
+     * 1. Adds duplicate section IDs to (set) sectionStats.duplicateIDs and skips/reports duplicates.
+     * 2. Increments the total number of seats available.
+     * 3. Adds the section object to the sectionStats.sections object, with the 'Core Section #' as its key.
+     * 
+    */
     function processSection(section) {
         if (sectionStats.IDs.has(section["Core Section #"])) {
             sectionStats.duplicateIDs.add(section["Core Section #"]);
