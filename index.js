@@ -87,9 +87,11 @@ window.onload = function () {
 
     /** Handles the student csv file uploading. */
     function handleStudentFile() {
+        clearReportText("students_container");
+        clearGraphics("students_container");
         studentStats = resetStudentStatistics();
         studentsHandled = false;
-        handleRunButton();
+        toggleRunButton();
         let file = upload_student_button.files[0];
         Papa.parse(file, {
             header: true,
@@ -111,7 +113,7 @@ window.onload = function () {
                 addStatsToElement(students_container, getInitialStudentStatsString());  // Text-stats
                 addPopularityChart(students_container)
                 studentsHandled = true;
-                handleRunButton();  // checks to see if sections are handled too
+                toggleRunButton();  // checks to see if sections are handled too
             }
         });
     }
@@ -182,9 +184,11 @@ window.onload = function () {
 
     /** Handles the section csv file uploading. */
     function handleSectionFile() {
+        clearReportText("sections_container");
+        clearGraphics("sections_container");
         sectionStats = resetSectionStatistics();
         sectionsHandled = false;
-        handleRunButton();
+        toggleRunButton();
         let file = upload_section_button.files[0];
         Papa.parse(file, {
             header: true,
@@ -203,7 +207,7 @@ window.onload = function () {
                 addStatsToElement(sections_container, getInitialSectionStatsString());
                 sectionsHandled = true;
                 upload_student_button.disabled = false;
-                handleRunButton();  // checks to see if students are handled too
+                toggleRunButton();  // checks to see if students are handled too
             }
         });
     }
@@ -232,9 +236,10 @@ window.onload = function () {
     }
 
     /** Toggles the state of the 'run' button based on the states of studentsHandled and sectionsHandled. */
-    function handleRunButton() {
+    function toggleRunButton() {
         save_button.disabled = true;
-        run_button.disabled = !(studentsHandled && sectionsHandled);
+        run_button.disabled = true;
+        if (studentsHandled && sectionsHandled) run_button.disabled = false;
     }
 
 
@@ -242,7 +247,11 @@ window.onload = function () {
      * on unassigned students, combines the results, and displays a report of the results to the user. */
     function runProgram() {
         run_button.disabled = true;
-        save_button.disabled = false;
+        save_button.disabled = true;
+
+        // Clear graphics in run container
+        clearReportText("run_container");
+        clearGraphics("run_container");
 
         // Do algorithm stuff
         let seats = buildSeatObjects(sectionStats.sections);  // now uses the provided section to build seats
@@ -718,6 +727,22 @@ window.onload = function () {
         let data = results.join("\n");
         let blob = new Blob([data], {type: "text/csv;charset=utf-8"});  // Save the string to a new file. Note: Not possible to open save as dialog box through javascript.
         saveAs(blob, "sortedhat.csv");  // from js/file-saver
+    }
+
+    /**
+     * Removes all canvas children of the parent element.
+     *  @param {String} parentID  - the ID of the parent element.
+     */
+    function clearGraphics(parentID) {
+        $(`#${parentID} canvas`).remove();
+    }
+
+     /**
+     * Removes all .report-text children of the parent element.
+     *  @param {String} parentID  - the ID of the parent element.
+     */
+    function clearReportText(parentID) {
+        $(`#${parentID} .report-text`).remove();
     }
 
 
