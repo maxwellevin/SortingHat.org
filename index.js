@@ -10,6 +10,7 @@ window.onload = function () {
     let upload_student_button = document.getElementById("upload_student");
     let upload_section_button = document.getElementById("upload_section");
     let run_button = document.getElementById("run");
+    let reset_button = document.getElementById("reset");
     let save_button = document.getElementById("save_as");
     let students_container = document.getElementById("students_container");
     let sections_container = document.getElementById("sections_container");
@@ -19,6 +20,7 @@ window.onload = function () {
     upload_student_button.onchange = handleStudentFile;
     upload_section_button.onchange = handleSectionFile;
     run_button.onclick = runProgram;
+    reset_button.onclick = resetProgram;
     save_button.onclick = saveResults;
 
 
@@ -262,8 +264,21 @@ window.onload = function () {
         // Display result stats to the user
         reportResults();
 
-        run_button.disabled = false;
+        run_button.disabled = true;
         save_button.disabled = false;
+        reset_button.disabled = false;
+    }
+
+    function resetProgram() {
+        reset_button.disabled = true;
+        
+        // Reset student and section variables
+        handleSectionFile();
+        handleStudentFile();
+
+        // Clear graphics in run container
+        clearReportText("run_container");
+        clearGraphics("run_container");
     }
 
     /** Returns a set of section IDs from the student's 'Illegal Sections'. " */
