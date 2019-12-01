@@ -26,7 +26,7 @@ Presently no additional headers are supported.
 Click the "Choose file" button under the students tab to upload a csv containing information about students. This file must have the following headers (order does not matter):
 
 * "ID" - a unique identifier for a student
-* "Sex" - the student's sex. Must be one of "M" or "F"
+* "Sex" - the student's legal sex. Must be one of "M" or "F".
 * "Athlete" - indicates if the student is involved with an athletics program. Should be "Y" if the student is an athlete
 * "Choice 1", "Choice 2", ..., "Choice 6" - the Core Section #s of the student's top choices.
 * "Placement" - the Core Section # of the section the student has been assigned to. This allows the user to make course allocations prior to running SortingHat. 
@@ -34,9 +34,9 @@ Click the "Choose file" button under the students tab to upload a csv containing
 
 Other headers and columns are permitted to be in the student csv file, but the program will not be able to use data from columns that have headers named something other than what is specified above.
 
-### Step 3: Set Minimum Sex Ratios
+### Step 3: Set Minimum Legal Sex Ratios
 
-SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such aspect is the ability to set rough minimum sex ratio for males/females in any section. By moving the sliders users can set a rough minimum percentage of males or females that each section should be composed of. Note that these are rough minimums -- because these are percentages and the number of students allowed in a class is a whole number, the actual results are not guaranteed to match exactly. Some tinkering may be required to get these exactly right. Fortunately, SortingHat reports the sex distribution outcome of each section, so you will know exactly which sections require additional attention.
+SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such aspect is the ability to set rough minimum ratio for males/females in any section. By moving the sliders users can set a rough minimum percentage of males or females that each section should be composed of. Note that these are rough minimums -- because these are percentages and the number of students allowed in a class is a whole number the actual results are not guaranteed to match exactly. Some tinkering may be required to meet user requirements. Fortunately, SortingHat reports the legal sex distribution outcome of each section, so you will know exactly which sections require additional attention.
 
 ### Step 4: Set Maximum Athlete Ratio
 
@@ -44,16 +44,16 @@ Users are also given the option of controlling the maximum percentage of student
 
 ### Step 5: Run the Program
 
-Click the "Run" button to run the program. This typically takes less than 10 seconds, but may the time taken will vary based on the number of students and sections provided. Upon determining an optimal allocation the program will output a brief summary of the results below the page. If the results are not satisfactory, you may try tinkering with the sliders until the results are more acceptable, or use the information provided by the charts to manually adjust the results. At it's current state SortingHat requires that you reload the page in order to run the program again with different settings. 
+Click the "Run" button to run the program. This typically takes less than 5 seconds, but the time taken will vary based on the number of students and sections provided and the speed of your computer. Upon determining an optimal allocation the program will output a brief summary of the results below the page. If the results are not satisfactory you can click the 'reset' button and re-run the program after tinkering with the sliders. Additionally, you can proceed to Step 6. and manually adjust the allocations. 
 
 ### Step 6: Save the Results
 
-When the results are satisfactory, click on the "Save" button to save the results to a local file. The file will be a csv with the following headers:
+Click on the "Save" button to save the results to a local file. The file will be a csv with the following headers:
 
 * "Student ID" - the ID of the student according to "ID" in the csv file pertaining to students.
 * "Core Section #" - the ID of the section the student has been assigned to.
 
 In the future, the following headers may be made available:
 
-* "Choice" - an integer (1 - 6) indicating which choice of section the student received. If empty, the student was allocated to a section not in their preferences. This can happen when a student does not list sufficient preferences or when a student's preferences are all illegal.
+* "Choice" - an integer (1 - 6) indicating which choice of section the student received. If 0, the student was allocated to a section not in their preferences. This can happen when a student does not list sufficient preferences or when a student's preferences are all illegal.
 
