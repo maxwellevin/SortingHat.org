@@ -1,6 +1,4 @@
 // "use strict";
-// TODO: Allow more than 6 choices (make this variable)
-// TODO: Allow program to be rerun without reload (Remove charts, reset variables, perhaps add reset button)
 // TODO: Use promises for seat-building to improve program responsiveness
 // TODO: Add more student data to saved csv file
 
@@ -23,7 +21,6 @@ window.onload = function () {
     reset_button.onclick = resetProgram;
     save_button.onclick = saveResults;
 
-
     /** Boolean values to track handling of students and sections. */
     let studentsHandled = false;
     let sectionsHandled = false;
@@ -45,6 +42,7 @@ window.onload = function () {
                 numFemales: 0,
                 numSexErrors: 0,
                 numAthletes: 0,
+                numChoicesEach: 0,
                 numPreferenceErrors: 0,
                 preassignedIDs: new Set(),
                 errorIDs: new Set(),
@@ -95,6 +93,7 @@ window.onload = function () {
         studentsHandled = false;
         toggleRunButton();
         let file = upload_student_button.files[0];
+        let isFirstRow = true;
         Papa.parse(file, {
             header: true,
             skipEmptyLines: 'greedy',
@@ -105,9 +104,16 @@ window.onload = function () {
                     return;
                 }
                 let student = results.data[0];
+                if (isFirstRow) {
+                    let i = 0;
+                    while (`Choice ${i+1}` in student) i++;
+                    studentStats.stats.numChoicesEach = i;
+                    isFirstRow = false;
+                }
                 processStudent(student);
             },
             complete: function (results, file) {
+                // Update Stats
                 studentStats.stats.numStudents = studentStats.stats.IDs.size;
                 studentStats.stats.numPreAssigned = studentStats.stats.preassignedIDs.size;
                 studentStats.stats.numPreferenceErrors = studentStats.stats.errorIDs.size;
@@ -311,7 +317,7 @@ window.onload = function () {
             dup.add(currID);
         }
         if (!legal) setPreferences(student, arr);
-        return !legal || arr.length != 6;
+        return !legal || arr.length != studentStats.stats.numChoicesEach;
     }
 
     // TODO: Account for preassigned students! (At least male/female. Athletes might be more tricky)
@@ -461,7 +467,7 @@ window.onload = function () {
     /** Returns an array of the student's preferences. */
     function getPreferenceIDs(student) {
         let prefIDs = [];
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= studentStats.stats.numChoicesEach; i++) {
             prefIDs.push(student["Choice " + i]);
         }
         return prefIDs;
@@ -473,7 +479,7 @@ window.onload = function () {
         for (let i = 1; i < prefIDs.length; i++) {
             student["Choice " + i] = prefIDs[i-1];
         }
-        for (let i = prefIDs.length; i <= 6; i++) {
+        for (let i = prefIDs.length; i <= studentStats.stats.numChoicesEach; i++) {
             student["Choice " + i] = "any";
         }
     }
@@ -609,7 +615,8 @@ window.onload = function () {
 
     /** Takes a report object and makes it look nice in html. */
     function reportResults() {
-        let choice_labels = ['None', 'Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6'];
+        let choice_labels = ['None'];
+        for (let i = 1; i <= studentStats.stats.numChoicesEach; i++) choice_labels.push(`Choice ${i}`);
         let overall = calculateAllocationsPerformance(studentStats.assignments, studentStats.students);
         choiceDistributionChart(run_container, choice_labels, overall, "Allocations (All)");
         addStackedSexChart(run_container);
@@ -625,7 +632,7 @@ window.onload = function () {
             Of those students, ${studentStats.stats.numAthletes} are athletes (${Math.round(100*studentStats.stats.numAthletes/studentStats.stats.numStudents)}%).
             There are ${studentStats.stats.numPreAssigned} students who have already been assigned sections.
         `;
-        if (studentStats.stats.numPreferenceErrors > 0) stats += `<br><br>WARNING: ${studentStats.stats.numPreferenceErrors} students did not list exactly 6 legal preferences. These students are: <blockquote>${Array.from(studentStats.stats.errorIDs).sort().join(', ')}</blockquote>`;
+        if (studentStats.stats.numPreferenceErrors > 0) stats += `<br><br>WARNING: ${studentStats.stats.numPreferenceErrors} students did not list exactly ${studentStats.stats.numChoicesEach} legal preferences. These students are: <blockquote>${Array.from(studentStats.stats.errorIDs).sort().join(', ')}</blockquote>`;
         if (studentStats.stats.duplicateIDs.size > 0) stats += `<br><br>ERROR: The students with IDs ${Array.from(studentStats.stats.duplicateIDs).join(', ')} are present more than once. Please resolve this before proceeding.`
         return stats;
     }
@@ -746,7 +753,7 @@ window.onload = function () {
 
     /**
      * Removes all canvas children of the parent element.
-     *  @param {String} parentID  - the ID of the parent element.
+     * @param {String} parentID  - the ID of the parent element.
      */
     function clearGraphics(parentID) {
         $(`#${parentID} canvas`).remove();
@@ -754,7 +761,7 @@ window.onload = function () {
 
      /**
      * Removes all .report-text children of the parent element.
-     *  @param {String} parentID  - the ID of the parent element.
+     * @param {String} parentID  - the ID of the parent element.
      */
     function clearReportText(parentID) {
         $(`#${parentID} .report-text`).remove();
