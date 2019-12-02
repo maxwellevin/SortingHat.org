@@ -5,14 +5,14 @@ import random
 num_sections = 20
 seats_per_section = 20
 num_students = 397
-section_filename = "example_sections_file.csv"
-student_filename = "example_students_file.csv"
+section_filename = "example_sections_5.csv"
+student_filename = "example_students_5.csv"
 
 possible_profs = ["Allen", "Babbage", "Cook", "Demaine", "Easley", "Floyd", "Gates", "Hamilton", "Hirschberg", "Kam Ho", "Hopper", "Irwin", "Jurafsky", "Knuth", "Lovelace", "Minsky", "Ng", "Norvig", "Neumann", "O'Sullivan", "Page", "Reddy", "Shannon", "Torvalds", "Ullman", "Viterbi", "Wozniak", "Yannakakis", "Zilberstein"]
 
 # Create Section Data
 core_section_numbers = [f"Section-{i+1}" for i in range(num_sections)]
-professors = [random.choice(possible_profs) for i in range(num_sections)]
+professors = [random.choice(possible_profs) for _ in range(num_sections)]
 student_caps = [seats_per_section for _ in range(num_sections)]
 
 # Create DataFrame
@@ -42,9 +42,9 @@ students = pd.DataFrame(data=[{
     "Choice 1": choice1[i],
     "Choice 2": choice2[i],
     "Choice 3": choice3[i],
-    "Choice 4": choice4[i],
-    "Choice 5": choice5[i],
-    "Choice 6": choice6[i],
+    # "Choice 4": choice4[i],
+    # "Choice 5": choice5[i],
+    # "Choice 6": choice6[i],
 } for i in range(num_students)])
 
 # Save csv files

@@ -1,0 +1,398 @@
+Placement,ID,Sex,Athlete,Illegal Sections,Choice 1,Choice 2,Choice 3
+,0,F,,"Section-5, Section-3",Section-8,Section-7,Section-10
+,1,M,,"Section-18, Section-11",Section-4,Section-12,Section-7
+,2,M,,"Section-7, Section-5",Section-11,Section-3,Section-14
+,3,F,,"Section-15, Section-20",Section-10,Section-8,Section-11
+Section-1,4,F,Y,,Section-9,Section-16,Section-1
+,5,M,,"Section-2, Section-4",Section-4,Section-17,Section-8
+,6,M,,"Section-20, Section-14",Section-1,Section-6,Section-10
+,7,M,Y,,Section-9,Section-19,Section-2
+,8,M,,"Section-9, Section-14",Section-18,Section-20,Section-11
+,9,F,,"Section-17, Section-19",Section-18,Section-15,Section-8
+,10,F,,"Section-9, Section-10",Section-14,Section-1,Section-19
+,11,F,,,Section-14,Section-1,Section-20
+,12,M,,,Section-1,Section-19,Section-8
+,13,F,,"Section-18, Section-6",Section-19,Section-11,Section-5
+,14,M,,,Section-17,Section-18,Section-4
+,15,F,,"Section-3, Section-13",Section-10,Section-4,Section-19
+,16,F,,,Section-14,Section-12,Section-16
+,17,M,Y,"Section-1, Section-2",Section-12,Section-18,Section-16
+,18,F,,,Section-4,Section-7,Section-14
+,19,M,,"Section-1, Section-17",Section-1,Section-12,Section-3
+,20,M,Y,"Section-5, Section-3",Section-3,Section-1,Section-15
+,21,F,,"Section-9, Section-8",Section-4,Section-8,Section-6
+,22,F,Y,"Section-4, Section-18",Section-2,Section-7,Section-4
+,23,F,Y,"Section-19, Section-20",Section-11,Section-7,Section-20
+,24,M,,,Section-19,Section-1,Section-3
+,25,M,,,Section-1,Section-17,Section-20
+,26,M,,,Section-13,Section-10,Section-6
+,27,F,Y,,Section-1,Section-16,Section-2
+,28,F,Y,,Section-4,Section-10,Section-9
+,29,M,Y,"Section-11, Section-11",Section-3,Section-13,Section-10
+,30,M,,,Section-14,Section-17,Section-20
+,31,M,Y,"Section-4, Section-12",Section-10,Section-15,Section-2
+,32,M,,,Section-20,Section-1,Section-15
+Section-6,33,F,,,Section-6,Section-15,Section-20
+,34,M,,,Section-13,Section-20,Section-2
+,35,M,Y,,Section-19,Section-20,Section-18
+,36,F,Y,,Section-13,Section-15,Section-18
+,37,F,,,Section-9,Section-16,Section-8
+,38,F,,"Section-13, Section-3",Section-15,Section-16,Section-12
+,39,F,Y,"Section-4, Section-17",Section-1,Section-10,Section-6
+,40,M,,"Section-15, Section-17",Section-3,Section-7,Section-20
+,41,F,Y,,Section-1,Section-9,Section-12
+,42,F,Y,"Section-2, Section-9",Section-3,Section-15,Section-8
+,43,F,,"Section-9, Section-8",Section-4,Section-8,Section-19
+,44,F,,"Section-10, Section-6",Section-15,Section-16,Section-9
+,45,F,Y,"Section-11, Section-16",Section-3,Section-6,Section-17
+,46,F,,"Section-15, Section-1",Section-3,Section-17,Section-15
+,47,M,Y,,Section-1,Section-8,Section-7
+Section-20,48,F,,"Section-6, Section-10",Section-12,Section-19,Section-20
+,49,F,,"Section-18, Section-2",Section-17,Section-8,Section-1
+,50,F,,"Section-17, Section-2",Section-11,Section-9,Section-7
+,51,F,Y,"Section-6, Section-10",Section-6,Section-9,Section-15
+,52,M,,,Section-6,Section-9,Section-13
+,53,M,,,Section-14,Section-3,Section-15
+Section-9,54,M,,,Section-18,Section-9,Section-8
+,55,F,,,Section-8,Section-19,Section-7
+,56,F,,"Section-2, Section-20",Section-1,Section-8,Section-19
+,57,F,Y,"Section-8, Section-16",Section-2,Section-6,Section-4
+,58,F,Y,"Section-13, Section-19",Section-15,Section-19,Section-12
+,59,F,,,Section-11,Section-15,Section-14
+Section-14,60,F,,"Section-12, Section-12",Section-14,Section-2,Section-13
+,61,F,,"Section-4, Section-20",Section-6,Section-12,Section-11
+,62,F,,"Section-17, Section-4",Section-2,Section-13,Section-12
+,63,M,,"Section-7, Section-10",Section-5,Section-17,Section-12
+,64,F,,,Section-4,Section-8,Section-9
+,65,F,,"Section-19, Section-3",Section-3,Section-13,Section-6
+,66,M,,"Section-12, Section-4",Section-19,Section-15,Section-9
+Section-18,67,F,,"Section-2, Section-3",Section-18,Section-10,Section-14
+,68,F,,"Section-11, Section-15",Section-16,Section-6,Section-15
+,69,F,Y,"Section-15, Section-16",Section-20,Section-19,Section-7
+,70,F,,,Section-9,Section-13,Section-11
+,71,F,Y,,Section-8,Section-12,Section-19
+,72,F,,,Section-3,Section-13,Section-5
+,73,M,,,Section-5,Section-20,Section-10
+,74,M,,"Section-11, Section-4",Section-6,Section-19,Section-11
+,75,F,Y,"Section-2, Section-9",Section-1,Section-20,Section-16
+,76,M,,"Section-7, Section-9",Section-8,Section-4,Section-3
+,77,F,Y,"Section-5, Section-1",Section-7,Section-10,Section-18
+,78,F,,"Section-6, Section-12",Section-4,Section-3,Section-10
+,79,F,,"Section-4, Section-8",Section-12,Section-7,Section-5
+,80,F,,"Section-16, Section-9",Section-8,Section-12,Section-16
+,81,F,,"Section-3, Section-17",Section-3,Section-20,Section-9
+,82,M,,,Section-10,Section-19,Section-5
+,83,F,,"Section-2, Section-19",Section-15,Section-1,Section-5
+Section-12,84,M,,,Section-20,Section-12,Section-14
+Section-17,85,F,,"Section-3, Section-16",Section-5,Section-11,Section-17
+,86,F,,"Section-16, Section-3",Section-8,Section-15,Section-14
+,87,F,,"Section-9, Section-13",Section-17,Section-7,Section-11
+,88,F,,"Section-10, Section-4",Section-5,Section-14,Section-17
+,89,M,,"Section-15, Section-19",Section-14,Section-4,Section-1
+,90,M,,,Section-13,Section-15,Section-9
+,91,F,,"Section-10, Section-1",Section-10,Section-18,Section-8
+,92,F,,,Section-11,Section-9,Section-19
+,93,M,,"Section-6, Section-13",Section-18,Section-19,Section-2
+,94,F,,,Section-19,Section-11,Section-12
+Section-3,95,M,Y,"Section-13, Section-10",Section-4,Section-18,Section-3
+,96,F,,"Section-8, Section-2",Section-13,Section-6,Section-18
+,97,M,Y,,Section-18,Section-9,Section-3
+,98,F,,,Section-8,Section-17,Section-2
+,99,F,,,Section-4,Section-5,Section-19
+,100,F,,,Section-20,Section-16,Section-2
+,101,F,Y,,Section-5,Section-13,Section-1
+,102,F,,"Section-11, Section-16",Section-20,Section-13,Section-17
+,103,F,,,Section-17,Section-3,Section-11
+,104,M,,,Section-9,Section-16,Section-6
+,105,M,,"Section-3, Section-7",Section-4,Section-2,Section-14
+,106,M,,"Section-3, Section-13",Section-18,Section-4,Section-6
+,107,F,,"Section-4, Section-3",Section-4,Section-6,Section-16
+,108,F,,"Section-3, Section-6",Section-18,Section-7,Section-17
+,109,F,,"Section-19, Section-15",Section-14,Section-5,Section-6
+,110,F,Y,,Section-6,Section-15,Section-19
+,111,M,,"Section-2, Section-6",Section-12,Section-3,Section-9
+,112,M,,,Section-13,Section-6,Section-16
+,113,M,,,Section-12,Section-15,Section-6
+Section-16,114,M,Y,"Section-12, Section-20",Section-16,Section-15,Section-2
+Section-7,115,M,,"Section-10, Section-20",Section-13,Section-3,Section-7
+,116,F,,,Section-18,Section-13,Section-12
+,117,M,,,Section-1,Section-3,Section-4
+Section-5,118,F,,"Section-6, Section-20",Section-5,Section-2,Section-1
+,119,F,,,Section-4,Section-5,Section-10
+Section-12,120,F,,"Section-15, Section-13",Section-12,Section-11,Section-5
+,121,M,,,Section-2,Section-16,Section-9
+,122,F,,"Section-16, Section-16",Section-16,Section-15,Section-2
+,123,M,,"Section-8, Section-20",Section-1,Section-18,Section-14
+,124,M,,,Section-7,Section-12,Section-2
+,125,F,,"Section-14, Section-4",Section-13,Section-5,Section-4
+,126,F,,,Section-3,Section-19,Section-14
+Section-11,127,F,,,Section-11,Section-2,Section-4
+,128,F,Y,,Section-14,Section-9,Section-5
+Section-14,129,F,,,Section-8,Section-10,Section-14
+,130,F,Y,"Section-18, Section-18",Section-3,Section-17,Section-19
+,131,M,Y,"Section-14, Section-17",Section-6,Section-20,Section-19
+,132,M,,,Section-14,Section-13,Section-16
+,133,F,Y,"Section-11, Section-15",Section-12,Section-20,Section-10
+Section-19,134,M,,,Section-7,Section-19,Section-10
+,135,M,,"Section-2, Section-6",Section-18,Section-10,Section-9
+,136,M,,,Section-17,Section-11,Section-20
+,137,F,,"Section-19, Section-6",Section-16,Section-18,Section-9
+,138,M,,,Section-12,Section-2,Section-5
+,139,F,Y,"Section-12, Section-2",Section-17,Section-16,Section-19
+,140,F,Y,,Section-6,Section-10,Section-12
+,141,F,Y,"Section-3, Section-20",Section-7,Section-6,Section-3
+,142,F,,,Section-3,Section-2,Section-1
+Section-7,143,F,Y,"Section-11, Section-11",Section-9,Section-19,Section-7
+,144,M,,"Section-14, Section-13",Section-20,Section-5,Section-19
+,145,F,Y,"Section-9, Section-2",Section-8,Section-9,Section-1
+,146,F,,"Section-2, Section-10",Section-18,Section-14,Section-3
+,147,M,,"Section-4, Section-6",Section-11,Section-12,Section-19
+,148,M,Y,,Section-3,Section-1,Section-2
+Section-9,149,M,Y,,Section-9,Section-10,Section-16
+,150,F,Y,,Section-13,Section-12,Section-1
+,151,F,,"Section-17, Section-9",Section-14,Section-9,Section-20
+,152,M,Y,,Section-20,Section-5,Section-9
+,153,F,,"Section-15, Section-12",Section-4,Section-6,Section-2
+,154,F,,,Section-3,Section-9,Section-18
+,155,M,,"Section-9, Section-5",Section-12,Section-20,Section-9
+,156,F,,"Section-8, Section-14",Section-14,Section-12,Section-16
+,157,F,,,Section-11,Section-12,Section-7
+,158,F,Y,,Section-9,Section-2,Section-5
+,159,F,,"Section-7, Section-17",Section-14,Section-20,Section-7
+,160,F,,"Section-19, Section-18",Section-19,Section-3,Section-20
+,161,M,,"Section-3, Section-12",Section-12,Section-4,Section-1
+Section-5,162,F,,"Section-11, Section-14",Section-4,Section-12,Section-5
+,163,M,,"Section-16, Section-7",Section-16,Section-2,Section-19
+,164,F,,"Section-20, Section-12",Section-6,Section-20,Section-16
+,165,F,,"Section-6, Section-8",Section-10,Section-19,Section-5
+,166,F,,"Section-14, Section-5",Section-8,Section-20,Section-11
+Section-1,167,M,,"Section-13, Section-18",Section-1,Section-20,Section-15
+,168,F,,"Section-13, Section-5",Section-7,Section-19,Section-6
+,169,M,Y,"Section-11, Section-12",Section-11,Section-2,Section-6
+,170,F,Y,"Section-11, Section-4",Section-10,Section-11,Section-4
+,171,M,Y,"Section-11, Section-1",Section-14,Section-19,Section-3
+,172,F,Y,,Section-17,Section-2,Section-6
+,173,M,,,Section-4,Section-7,Section-13
+,174,M,,"Section-15, Section-10",Section-7,Section-9,Section-2
+,175,M,,"Section-9, Section-5",Section-8,Section-19,Section-17
+,176,M,,"Section-12, Section-4",Section-1,Section-13,Section-14
+,177,F,,"Section-15, Section-20",Section-2,Section-8,Section-9
+,178,M,,"Section-6, Section-2",Section-10,Section-9,Section-13
+,179,F,,,Section-15,Section-2,Section-11
+,180,F,,"Section-19, Section-13",Section-7,Section-9,Section-11
+Section-9,181,F,,,Section-16,Section-12,Section-9
+,182,M,,,Section-9,Section-20,Section-14
+,183,M,,,Section-4,Section-14,Section-12
+,184,F,,,Section-7,Section-11,Section-3
+,185,F,,"Section-8, Section-5",Section-11,Section-4,Section-17
+,186,M,,"Section-10, Section-8",Section-6,Section-11,Section-5
+,187,F,Y,"Section-14, Section-14",Section-12,Section-18,Section-1
+,188,M,,"Section-3, Section-18",Section-14,Section-8,Section-20
+,189,F,,"Section-7, Section-5",Section-12,Section-16,Section-19
+,190,M,Y,,Section-18,Section-7,Section-12
+,191,M,Y,,Section-13,Section-5,Section-4
+Section-2,192,F,,,Section-2,Section-10,Section-4
+,193,M,,"Section-17, Section-10",Section-19,Section-7,Section-18
+,194,M,,"Section-4, Section-10",Section-3,Section-1,Section-2
+,195,F,Y,"Section-15, Section-12",Section-19,Section-3,Section-11
+,196,F,,"Section-5, Section-9",Section-13,Section-1,Section-18
+,197,F,,,Section-19,Section-17,Section-18
+,198,F,,"Section-6, Section-2",Section-4,Section-8,Section-12
+,199,M,,"Section-9, Section-20",Section-4,Section-16,Section-10
+,200,F,,,Section-12,Section-11,Section-8
+,201,M,,,Section-9,Section-3,Section-7
+,202,F,Y,"Section-4, Section-3",Section-17,Section-13,Section-15
+,203,F,,"Section-19, Section-6",Section-2,Section-10,Section-11
+,204,M,,"Section-18, Section-15",Section-11,Section-19,Section-17
+,205,F,,"Section-7, Section-11",Section-10,Section-15,Section-12
+,206,M,Y,"Section-11, Section-7",Section-20,Section-17,Section-8
+,207,M,,"Section-18, Section-18",Section-5,Section-8,Section-1
+,208,F,Y,"Section-15, Section-4",Section-12,Section-11,Section-20
+,209,M,,"Section-13, Section-1",Section-16,Section-10,Section-2
+,210,F,,,Section-4,Section-10,Section-18
+Section-9,211,F,,"Section-10, Section-14",Section-1,Section-9,Section-3
+,212,F,,"Section-15, Section-19",Section-1,Section-4,Section-20
+,213,F,,"Section-10, Section-1",Section-13,Section-16,Section-10
+,214,F,,"Section-14, Section-5",Section-1,Section-3,Section-19
+,215,M,Y,"Section-10, Section-14",Section-12,Section-2,Section-6
+,216,M,,,Section-3,Section-14,Section-1
+,217,F,,"Section-6, Section-11",Section-20,Section-9,Section-2
+,218,F,,"Section-11, Section-10",Section-12,Section-15,Section-11
+,219,F,Y,"Section-18, Section-12",Section-10,Section-16,Section-1
+,220,M,,"Section-18, Section-20",Section-10,Section-13,Section-6
+,221,F,,,Section-17,Section-3,Section-1
+,222,F,,,Section-19,Section-13,Section-1
+Section-1,223,F,,,Section-1,Section-14,Section-17
+,224,M,,,Section-12,Section-2,Section-16
+,225,F,,"Section-15, Section-12",Section-11,Section-17,Section-13
+,226,M,,,Section-13,Section-8,Section-19
+,227,M,,"Section-1, Section-5",Section-10,Section-17,Section-14
+,228,F,,"Section-14, Section-2",Section-6,Section-10,Section-8
+Section-11,229,M,,,Section-16,Section-11,Section-15
+,230,F,,,Section-1,Section-20,Section-19
+,231,M,,"Section-20, Section-12",Section-14,Section-3,Section-15
+,232,F,,"Section-18, Section-4",Section-12,Section-10,Section-20
+,233,F,Y,"Section-17, Section-17",Section-14,Section-10,Section-7
+,234,M,,"Section-4, Section-13",Section-14,Section-20,Section-5
+,235,F,,"Section-10, Section-18",Section-19,Section-2,Section-6
+,236,F,Y,"Section-19, Section-7",Section-10,Section-18,Section-11
+,237,M,,,Section-5,Section-4,Section-11
+,238,F,Y,"Section-3, Section-6",Section-13,Section-7,Section-9
+,239,F,Y,"Section-7, Section-20",Section-15,Section-1,Section-2
+,240,M,,,Section-1,Section-4,Section-13
+,241,M,,,Section-20,Section-19,Section-3
+Section-2,242,F,,"Section-10, Section-17",Section-18,Section-2,Section-8
+,243,F,Y,"Section-15, Section-7",Section-19,Section-13,Section-1
+,244,F,,"Section-8, Section-19",Section-9,Section-1,Section-2
+,245,F,,"Section-12, Section-20",Section-6,Section-10,Section-16
+,246,F,Y,"Section-16, Section-3",Section-8,Section-12,Section-9
+,247,M,,"Section-12, Section-1",Section-3,Section-8,Section-17
+,248,F,,,Section-3,Section-6,Section-17
+,249,M,,,Section-17,Section-15,Section-4
+Section-17,250,M,,"Section-4, Section-12",Section-5,Section-8,Section-17
+,251,M,Y,,Section-5,Section-7,Section-11
+,252,M,,"Section-11, Section-4",Section-10,Section-7,Section-15
+,253,M,,"Section-1, Section-2",Section-10,Section-3,Section-9
+,254,F,,"Section-18, Section-12",Section-9,Section-17,Section-11
+,255,F,,,Section-10,Section-11,Section-9
+,256,M,,,Section-15,Section-13,Section-12
+,257,F,Y,,Section-10,Section-5,Section-13
+,258,F,Y,"Section-20, Section-2",Section-17,Section-11,Section-2
+,259,M,Y,,Section-12,Section-3,Section-2
+,260,M,,,Section-15,Section-1,Section-17
+,261,F,Y,"Section-20, Section-11",Section-13,Section-4,Section-16
+,262,F,,,Section-6,Section-12,Section-19
+,263,F,,,Section-20,Section-15,Section-1
+,264,M,,,Section-9,Section-16,Section-1
+,265,F,,,Section-5,Section-11,Section-15
+,266,F,Y,"Section-10, Section-11",Section-20,Section-9,Section-17
+,267,F,Y,,Section-15,Section-2,Section-13
+,268,M,,,Section-16,Section-9,Section-4
+,269,M,,,Section-4,Section-13,Section-19
+,270,F,,"Section-2, Section-9",Section-4,Section-19,Section-10
+,271,F,,,Section-10,Section-11,Section-7
+,272,M,,"Section-2, Section-13",Section-6,Section-10,Section-7
+Section-19,273,F,,"Section-5, Section-8",Section-10,Section-19,Section-20
+,274,F,,"Section-16, Section-1",Section-10,Section-1,Section-3
+,275,F,Y,"Section-13, Section-14",Section-18,Section-20,Section-19
+Section-17,276,M,,"Section-13, Section-3",Section-17,Section-20,Section-8
+,277,F,,"Section-10, Section-9",Section-2,Section-13,Section-18
+,278,F,,"Section-13, Section-17",Section-20,Section-19,Section-13
+,279,M,,"Section-15, Section-11",Section-16,Section-10,Section-17
+,280,M,,,Section-17,Section-6,Section-11
+,281,F,,,Section-5,Section-6,Section-20
+,282,F,Y,"Section-19, Section-8",Section-4,Section-2,Section-16
+,283,M,Y,,Section-8,Section-3,Section-18
+,284,F,,"Section-19, Section-4",Section-6,Section-20,Section-5
+,285,F,Y,,Section-9,Section-16,Section-17
+,286,F,,,Section-5,Section-7,Section-10
+Section-1,287,F,,"Section-13, Section-16",Section-5,Section-1,Section-18
+,288,F,Y,"Section-11, Section-8",Section-19,Section-8,Section-4
+Section-8,289,F,,,Section-5,Section-18,Section-8
+,290,M,,"Section-13, Section-3",Section-3,Section-17,Section-11
+,291,M,,,Section-14,Section-5,Section-18
+,292,F,Y,"Section-4, Section-16",Section-14,Section-11,Section-1
+Section-7,293,F,Y,"Section-8, Section-17",Section-3,Section-7,Section-14
+,294,F,,"Section-2, Section-12",Section-3,Section-13,Section-5
+,295,F,Y,"Section-10, Section-3",Section-15,Section-19,Section-14
+,296,F,,"Section-15, Section-2",Section-8,Section-3,Section-14
+,297,F,,,Section-13,Section-15,Section-7
+Section-4,298,M,,"Section-20, Section-13",Section-13,Section-4,Section-19
+,299,M,Y,"Section-20, Section-9",Section-18,Section-3,Section-12
+,300,M,,"Section-19, Section-20",Section-7,Section-5,Section-2
+,301,F,,"Section-16, Section-15",Section-6,Section-5,Section-16
+,302,F,,"Section-7, Section-17",Section-14,Section-6,Section-9
+,303,F,Y,,Section-8,Section-13,Section-18
+,304,M,,"Section-4, Section-13",Section-19,Section-4,Section-20
+,305,F,Y,"Section-12, Section-17",Section-1,Section-16,Section-2
+,306,M,Y,"Section-4, Section-16",Section-18,Section-15,Section-12
+,307,M,Y,"Section-2, Section-5",Section-11,Section-19,Section-13
+,308,F,Y,"Section-18, Section-13",Section-13,Section-9,Section-11
+,309,F,Y,"Section-13, Section-17",Section-11,Section-8,Section-14
+,310,F,Y,"Section-15, Section-10",Section-19,Section-20,Section-3
+Section-17,311,F,,"Section-3, Section-7",Section-4,Section-17,Section-6
+,312,F,,"Section-4, Section-6",Section-8,Section-18,Section-10
+,313,F,,"Section-11, Section-6",Section-9,Section-4,Section-10
+,314,M,,"Section-16, Section-10",Section-4,Section-1,Section-7
+Section-17,315,F,Y,"Section-12, Section-4",Section-10,Section-19,Section-17
+,316,F,Y,,Section-13,Section-1,Section-19
+,317,M,Y,,Section-7,Section-15,Section-8
+Section-5,318,M,,,Section-5,Section-1,Section-18
+,319,F,Y,"Section-9, Section-9",Section-8,Section-16,Section-4
+,320,M,,"Section-8, Section-18",Section-4,Section-7,Section-10
+,321,M,,,Section-12,Section-20,Section-19
+,322,M,,"Section-2, Section-19",Section-10,Section-4,Section-15
+,323,M,Y,,Section-7,Section-17,Section-20
+,324,M,,"Section-7, Section-17",Section-8,Section-7,Section-16
+,325,F,,"Section-3, Section-19",Section-2,Section-9,Section-17
+Section-8,326,F,,,Section-1,Section-18,Section-8
+,327,F,,,Section-6,Section-16,Section-18
+,328,F,,"Section-8, Section-9",Section-1,Section-7,Section-19
+Section-18,329,M,,"Section-14, Section-15",Section-18,Section-6,Section-7
+,330,F,,"Section-4, Section-4",Section-10,Section-11,Section-1
+,331,M,,"Section-1, Section-4",Section-12,Section-15,Section-11
+,332,M,,,Section-7,Section-1,Section-15
+,333,M,,,Section-20,Section-6,Section-19
+,334,F,,"Section-14, Section-5",Section-11,Section-20,Section-6
+,335,F,,"Section-16, Section-15",Section-9,Section-20,Section-4
+,336,F,Y,,Section-8,Section-17,Section-18
+,337,F,,,Section-19,Section-10,Section-20
+,338,F,,"Section-7, Section-8",Section-20,Section-4,Section-2
+,339,F,Y,"Section-2, Section-14",Section-2,Section-13,Section-9
+,340,M,,"Section-9, Section-9",Section-5,Section-10,Section-6
+,341,F,,,Section-8,Section-5,Section-10
+,342,M,Y,,Section-2,Section-5,Section-13
+,343,F,,"Section-13, Section-12",Section-2,Section-14,Section-8
+,344,F,,"Section-11, Section-13",Section-2,Section-4,Section-16
+,345,F,,,Section-9,Section-18,Section-8
+,346,F,,"Section-8, Section-3",Section-15,Section-1,Section-20
+,347,F,,,Section-9,Section-19,Section-16
+,348,F,,"Section-8, Section-2",Section-1,Section-12,Section-10
+,349,M,,"Section-15, Section-12",Section-14,Section-20,Section-8
+,350,F,,,Section-3,Section-10,Section-4
+,351,F,,,Section-11,Section-19,Section-14
+,352,F,,,Section-4,Section-2,Section-13
+,353,M,,"Section-12, Section-2",Section-7,Section-3,Section-9
+,354,F,,"Section-4, Section-2",Section-15,Section-9,Section-12
+,355,M,,,Section-9,Section-17,Section-4
+,356,M,,,Section-1,Section-9,Section-6
+,357,M,,"Section-10, Section-14",Section-12,Section-11,Section-4
+,358,F,Y,"Section-6, Section-4",Section-17,Section-6,Section-7
+,359,M,Y,"Section-9, Section-17",Section-12,Section-3,Section-16
+,360,F,,"Section-8, Section-9",Section-14,Section-16,Section-19
+,361,F,Y,"Section-1, Section-12",Section-6,Section-7,Section-14
+,362,M,,"Section-15, Section-20",Section-17,Section-16,Section-13
+,363,F,Y,,Section-4,Section-8,Section-1
+Section-4,364,F,,"Section-20, Section-18",Section-4,Section-6,Section-8
+,365,M,,,Section-3,Section-2,Section-19
+,366,M,Y,"Section-6, Section-6",Section-10,Section-17,Section-15
+,367,F,Y,"Section-15, Section-13",Section-13,Section-2,Section-16
+,368,F,Y,"Section-3, Section-10",Section-14,Section-11,Section-4
+,369,M,,"Section-1, Section-7",Section-17,Section-20,Section-13
+,370,M,,,Section-2,Section-16,Section-8
+,371,F,,"Section-1, Section-12",Section-18,Section-7,Section-19
+,372,M,,,Section-11,Section-18,Section-7
+,373,F,,,Section-9,Section-7,Section-6
+Section-12,374,F,Y,,Section-2,Section-9,Section-12
+,375,M,Y,"Section-10, Section-6",Section-12,Section-19,Section-15
+Section-12,376,M,Y,"Section-16, Section-19",Section-12,Section-1,Section-20
+,377,M,,,Section-14,Section-9,Section-20
+,378,M,,"Section-6, Section-3",Section-17,Section-12,Section-13
+,379,M,Y,,Section-6,Section-16,Section-8
+,380,F,,"Section-9, Section-10",Section-1,Section-6,Section-4
+,381,F,,,Section-16,Section-6,Section-19
+,382,F,,,Section-18,Section-13,Section-6
+,383,M,,,Section-14,Section-12,Section-8
+,384,M,Y,,Section-13,Section-16,Section-20
+,385,M,Y,,Section-3,Section-9,Section-20
+,386,F,Y,"Section-15, Section-6",Section-8,Section-10,Section-12
+,387,M,Y,,Section-13,Section-20,Section-12
+,388,F,,,Section-11,Section-6,Section-7
+,389,M,Y,"Section-6, Section-3",Section-12,Section-2,Section-19
+,390,F,,,Section-1,Section-3,Section-9
+,391,F,,,Section-2,Section-19,Section-13
+,392,M,,"Section-11, Section-15",Section-10,Section-15,Section-7
+,393,F,,"Section-9, Section-3",Section-6,Section-11,Section-2
+Section-6,394,F,Y,,Section-4,Section-13,Section-6
+,395,F,,"Section-8, Section-20",Section-3,Section-11,Section-13
+,396,F,,"Section-16, Section-19",Section-11,Section-12,Section-5
