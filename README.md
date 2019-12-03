@@ -27,9 +27,9 @@ Click the "Choose file" button under the students tab to upload a csv containing
 
 Other headers and columns are permitted to be in the student csv file, but the program will not be able to use data from columns that have headers named something other than what is specified above.
 
-### Step 3: Set Minimum Gender Ratios
+### Step 3: Set Minimum Legal Sex Ratios
 
-SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such aspect is the ability to set rough minimum gender ratio for males/females in any section. By moving the sliders users can set a rough minimum percentage of males or females that each section should be composed of. Note that these are rough minimums -- because these are percentages and the number of students allowed in a class is a whole number, the actual results are not guaranteed to match exactly. Some tinkering may be required to get these exactly right. Fortunately, SortingHat reports the gender distribution outcome of each section, so you will know exactly which sections require additional attention.
+SortingHat offers users the ability to control certain aspects of how students are distributed in classes. One such aspect is the ability to set rough minimum legal sex ratios for males/females in any section. By moving the sliders users can set a rough minimum percentage of males or females that each section should be composed of. Note that these are rough minimums -- because these are percentages and the number of students allowed in a class is a whole number, the actual results are not guaranteed to match exactly. Some tinkering may be required to get these exactly right. Fortunately, SortingHat reports the gender distribution outcome of each section, so you will know exactly which sections require additional attention.
 
 ### Step 4: Set Maximum Athlete Ratio
 
