@@ -19,7 +19,7 @@ Presently no additional headers are supported.
 Click the "Choose file" button under the students tab to upload a csv containing information about students. This file must have the following headers (order does not matter):
 
 * "ID" - a unique identifier for a student
-* "Gender" - the student's gender. Must be one of "M" or "F" (Working on adding additional options)
+* "Sex" - the student's legal sex. Must be one of "M" or "F".
 * "Athlete" - indicates if the student is involved with an athletics program. Should be "Y" if the student is an athlete
 * "Choice 1", "Choice 2", ..., "Choice 6" - the Core Section #s of the student's top choices.
 * "Placement" - the Core Section # of the section the student has been assigned to. This allows the user to make course allocations prior to running SortingHat. 
