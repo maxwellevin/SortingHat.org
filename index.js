@@ -176,13 +176,17 @@ window.onload = function () {
     }
 
     /** Adds the given student to the given section by adding the sectionID to the the studentStats.assignments object,
-     * adding the student's id to the section.students set, and reducing the section's cap. Also updates several of the
-     * section's stats from student info. */
+     * adding the student's id to the section.students set, and reducing the section's cap. 
+     * 
+     * Also adds the sectionID to the student's 'Placement' data
+     * 
+     * Additionally updates several of the section's stats from student info. */
     function addStudentToSection(student, section) {
         // Necessary stuff
         studentStats.assignments[student["ID"]] = section["Core Section #"];
         section.students.add(student["ID"]);
         section["Student Cap"] -= 1;
+        student["Placement"] = section["Core Section #"];
         // Stats
         section.stats.numStudents++;
         section.stats.numMales += (student["Sex"] == "M") ? 1 : 0;
@@ -275,6 +279,9 @@ window.onload = function () {
         reset_button.disabled = false;
     }
 
+    /**
+     * Resets the program by re-parsing section and student data and clearing previous outputs.
+     */
     function resetProgram() {
         reset_button.disabled = true;
         
@@ -285,6 +292,8 @@ window.onload = function () {
         // Clear graphics in run container
         clearReportText("run_container");
         clearGraphics("run_container");
+
+        run_button.disabled = false;
     }
 
     /** Returns a set of section IDs from the student's 'Illegal Sections'. " */
@@ -442,7 +451,7 @@ window.onload = function () {
         return Math.pow(costBase, prefNum);
     }
 
-    /** Returns an integer (1-6) corresponding to the position of the given section in the student's preferences. If the
+    /** Returns an integer (1-N) corresponding to the position of the given section in the student's preferences. If the
      * section is not in the student's preferences, then the function returns 0. Note: students are allowed six
      * preferences, and it is assumed that students do not list section id's more than once in their preferences. */
     function getPreferenceNumber(student, sectionID) {
@@ -455,7 +464,7 @@ window.onload = function () {
         catch (e) {
             // console.log(student);  // probably undefined
         }
-        for (let i = 1; i < 7; i++) {
+        for (let i = 1; i <= studentStats.stats.numChoicesEach; i++) {
             if (student["Choice " + i] === sectionID || student["Choice " + i] === "any") {
                 return i;
             }
@@ -504,7 +513,10 @@ window.onload = function () {
     /** Gets the number of students who were assigned their top choice, second, third, etc. Index 0 in the returned array
      * is the number of students who didn't get any of their preferences. */
     function calculateAllocationsPerformance(allocations, dataSource) {
-        let data = [0, 0, 0, 0, 0, 0, 0];  // 0: None, 1-6: preference
+        // 0: None, 1-N: preference
+        let data = [0];
+        for (let i = 0; i < studentStats.stats.numChoicesEach; i++) data.push(0);
+        console.log(studentStats.stats.numChoicesEach);
         Object.keys(allocations).forEach(function (studentID, _) {
             let student = dataSource[studentID];
             let sectionID = allocations[studentID];
@@ -739,12 +751,14 @@ window.onload = function () {
      * the user's browser. */
     function saveResults() {
         // Convert the allocations object to an array
-        let results = ["Student ID,Core Section #"];  // Headers
+        let results = ["Student ID,Core Section #,Choice #"];  // Headers
         Object.keys(studentStats.assignments).forEach(function (key, _) {
-            if (studentStats.students[key]["Illegal Sections"].has(studentStats.assignments[key])) {
-                console.log(studentStats.students[key]);
+            let student = studentStats.students[key];
+            let placement = student["Placement"];
+            if (student["Illegal Sections"].has(placement)) {
+                console.log("ERROR: Student" + student + " received an illegal section");
             }
-            results.push(key + "," + studentStats.assignments[key]);
+            results.push(`${key},${studentStats.assignments[key]},${getPreferenceNumber(student, placement)}`);
         });
         let data = results.join("\n");
         let blob = new Blob([data], {type: "text/csv;charset=utf-8"});  // Save the string to a new file. Note: Not possible to open save as dialog box through javascript.
