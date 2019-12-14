@@ -19,7 +19,7 @@ window.onload = function () {
     upload_section_button.onchange = handleSectionFile;
     run_button.onclick = runProgram;
     reset_button.onclick = resetProgram;
-    save_button.onclick = saveResults;
+    save_button.onclick = save;
 
     /** Boolean values to track handling of students and sections. */
     let studentsHandled = false;
@@ -142,7 +142,9 @@ window.onload = function () {
      * 
     */
     function processStudent(student) {
+        student["ID"] = parseInt(student["ID"]);
         let id = student["ID"];
+        // console.log(typeof(id));
         // Business
         if (studentStats.stats.IDs.has(id)) {
             studentStats.stats.duplicateIDs.add(id);
@@ -169,18 +171,20 @@ window.onload = function () {
         studentStats.stats.numAthletes += (student["Athlete"] == "Y") ? 1 : 0;
         getPreferenceIDs(student).forEach(sectionID => {  // popularity score
             let prefNum = getPreferenceNumber(student, sectionID);
-            if (sectionStats.IDs.has(sectionID) && sectionID !== "any") {
+            if (sectionStats.IDs.has(sectionID) && sectionID !== "") {
                 sectionStats.sections[sectionID].stats.popularity += 1 / prefNum;
             }
         });
     }
 
-    /** Adds the given student to the given section by adding the sectionID to the the studentStats.assignments object,
+    /** 
+     * Adds the given student to the given section by adding the sectionID to the the studentStats.assignments object,
      * adding the student's id to the section.students set, and reducing the section's cap. 
      * 
-     * Also adds the sectionID to the student's 'Placement' data
+     * Also adds the sectionID to the student's 'Placement' data.
      * 
-     * Additionally updates several of the section's stats from student info. */
+     * Additionally updates several of the section's stats from student info. 
+     */
     function addStudentToSection(student, section) {
         // Necessary stuff
         studentStats.assignments[student["ID"]] = section["Core Section #"];
@@ -269,7 +273,7 @@ window.onload = function () {
         let seats = buildSeatObjects(sectionStats.sections);  // now uses the provided section to build seats
         let costMatrix = buildCostMatrix(seats, studentStats.unassigned);
         let allocations = runCostMatrix(costMatrix);
-        makeAssignments(allocations, seats, studentStats.unassigned);  // updates studentStats.assignments
+        makeAssignments(allocations, seats, studentStats.unassigned);  // updates studentStats.assignments and studentStats.students
 
         // Display result stats to the user
         reportResults();
@@ -465,7 +469,7 @@ window.onload = function () {
             // console.log(student);  // probably undefined
         }
         for (let i = 1; i <= studentStats.stats.numChoicesEach; i++) {
-            if (student["Choice " + i] === sectionID || student["Choice " + i] === "any") {
+            if (student["Choice " + i] === sectionID || student["Choice " + i] === "") {
                 return i;
             }
         }
@@ -482,14 +486,13 @@ window.onload = function () {
         return prefIDs;
     }
 
-
     /** Modifies the student's preferences to the given prefIDs array. */
     function setPreferences(student, prefIDs) {
         for (let i = 1; i < prefIDs.length; i++) {
             student["Choice " + i] = prefIDs[i-1];
         }
-        for (let i = prefIDs.length; i <= studentStats.stats.numChoicesEach; i++) {
-            student["Choice " + i] = "any";
+        for (let i = Math.max(1, prefIDs.length); i <= studentStats.stats.numChoicesEach; i++) {
+            student["Choice " + i] = "";
         }
     }
 
@@ -516,7 +519,6 @@ window.onload = function () {
         // 0: None, 1-N: preference
         let data = [0];
         for (let i = 0; i < studentStats.stats.numChoicesEach; i++) data.push(0);
-        console.log(studentStats.stats.numChoicesEach);
         Object.keys(allocations).forEach(function (studentID, _) {
             let student = dataSource[studentID];
             let sectionID = allocations[studentID];
@@ -747,22 +749,52 @@ window.onload = function () {
         });
     }
 
-    /** Saves the allocations to a csv file when the user clicks the "Save" button. Note the save path is specified by
-     * the user's browser. */
+    /** 
+     * Saves the allocations to a csv file when the user clicks the "Save" button. 
+     * Note the save path is specified by the user's browser. 
+     * */
     function saveResults() {
         // Convert the allocations object to an array
         let results = ["Student ID,Core Section #,Choice #"];  // Headers
         Object.keys(studentStats.assignments).forEach(function (key, _) {
             let student = studentStats.students[key];
             let placement = student["Placement"];
-            if (student["Illegal Sections"].has(placement)) {
-                console.log("ERROR: Student" + student + " received an illegal section");
-            }
+     
             results.push(`${key},${studentStats.assignments[key]},${getPreferenceNumber(student, placement)}`);
         });
         let data = results.join("\n");
         let blob = new Blob([data], {type: "text/csv;charset=utf-8"});  // Save the string to a new file. Note: Not possible to open save as dialog box through javascript.
         saveAs(blob, "sortedhat.csv");  // from js/file-saver
+    }
+
+
+    /**
+     * Saves results to a csv.
+     * Uses the original student csv file as a template and adds column "Choice Number".
+     */
+    function save() {
+        let studentIDs = Object.keys(studentStats.students);
+        let data = "";
+        for (let i = 0; i < studentIDs.length; i++) {
+            let student = studentStats.students[studentIDs[i]];
+            student["Choice Number"] = getPreferenceNumber(student, student["Placement"]);
+            student["Illegal Sections"] = setToCSVString(student["Illegal Sections"]);
+            let values = Object.keys(student).reduce((arr, key) => {
+                arr.push('"' + student[key] + '"');
+                return arr;
+            }, []);
+            data += "\n" + values.join(",");
+        }
+        let headers = Object.keys(studentStats.students[studentIDs[0]]).join(",");
+        data = headers + data;
+        let blob = new Blob([data], {type: "text/csv;charset=utf-8"});  // Weird thing necessary for saving files.
+        saveAs(blob, "sortedhat.csv");  // from js/file-saver       
+    }
+
+    function setToCSVString(set) {
+        let arr = Array.from(set);
+        if (arr.length == 0) return "";
+        return arr.join(",");
     }
 
     /**
