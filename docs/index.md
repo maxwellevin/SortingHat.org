@@ -48,12 +48,10 @@ Click the "Run" button to run the program. This typically takes less than 5 seco
 
 ### Step 6: Save the Results
 
-Click on the "Save" button to save the results to a local file. The file will be a csv with the following headers:
+When the results are satisfactory, click on the "Save" button to save the results as a csv file. The saved file will have all of the same headers as the original student file in addition to a new header called "Choice Number", which indicates how preferable the student's assignment was to them. 
 
-* "Student ID" - the ID of the student according to "ID" in the csv file pertaining to students.
-* "Core Section #" - the ID of the section the student has been assigned to.
+For instance, a "Choice Number" of 1 means the student got their first choice, 2 would be their second choice, and so on. A "Choice Number" of 0 would indicate that the student didn't get any of their choices and -1 would indicate that they got an illegal section. Note that the "Choice Number" field uses the student's adjusted preferences (see below).
 
-In the future, the following headers may be made available:
+Additionally, the saved csv file will have updated information in the "Placement" column. Each student will now have this field populated with a Core Section #. 
 
-* "Choice" - an integer (1 - 6) indicating which choice of section the student received. If 0, the student was allocated to a section not in their preferences. This can happen when a student does not list sufficient preferences or when a student's preferences are all illegal.
-
+Finally, you will notice that the fields "Choice 1", "Choice 2",... and so on will have changed for students who listed illegal preferences (SortingHat lists these student IDs early on in the program). The new "Choice 1", "Choice 2", ... fields are the student's adjusted preferences. Choices are adjusted to remove any Core Section #s present in the student's "Illegal Sections" field and to remove duplicate Core Section #s in the students preferences.
