@@ -1,6 +1,4 @@
 // "use strict";
-// TODO: Use promises for seat-building to improve program responsiveness
-// TODO: Add more student data to saved csv file
 
 window.onload = function () {
 
@@ -79,6 +77,8 @@ window.onload = function () {
                 numFemales: 0,
                 numAthletes: 0,
                 popularity: 0,
+                malePopularity: 0,
+                femalePopularity: 0,
             },
             students: new Set(),
         };
@@ -173,6 +173,8 @@ window.onload = function () {
             let prefNum = getPreferenceNumber(student, sectionID);
             if (sectionStats.IDs.has(sectionID) && sectionID !== "") {
                 sectionStats.sections[sectionID].stats.popularity += 1 / prefNum;
+                sectionStats.sections[sectionID].stats.malePopularity += (student["Sex"] == "M") ? 1 / prefNum : 0;
+                sectionStats.sections[sectionID].stats.femalePopularity += (student["Sex"] == "F") ? 1 / prefNum : 0;
             }
         });
     }
@@ -333,7 +335,7 @@ window.onload = function () {
         return !legal || arr.length != studentStats.stats.numChoicesEach;
     }
 
-    // TODO: Account for preassigned students! (At least male/female. Athletes might be more tricky)
+    // TODO: Account for preassigned students (At least male/female. Athletes might be more tricky)
     /** Builds an object to hold an array of seats. Each seat has three main properties:
      * reserved: true if the seat is reserved for a specific sex of student, false otherwise.
      * sex: Either "M", "F", or "". Indicates the sex of student that the seat is reserved for.
@@ -540,25 +542,21 @@ window.onload = function () {
      * is calculated as the sum across all students of {(1 / pref#) if the section is in the student's preferences, else (0)}. */
     function addPopularityChart(parentElement) {
         let labels = Object.keys(sectionStats.sections);
-        let data = Object.keys(sectionStats.sections).reduce((arr, key) => {
-            arr.push(Math.round(sectionStats.sections[key].stats.popularity));
+        let maleData = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            arr.push(Math.round(sectionStats.sections[key].stats.malePopularity));
             return arr;
         }, []);
-        createSectionChart(parentElement, labels, data, "Section Popularity");
+        let femaleData = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            arr.push(Math.round(sectionStats.sections[key].stats.femalePopularity));
+            return arr;
+        }, []);
+        // createSectionChart(parentElement, labels, data, "Section Popularity");
+        addStackedSexChart(parentElement, maleData, femaleData, "Section Popularity");
     }
 
     /** Creates a stacked bar chart depicting the sex balance for every section. */
-    function addStackedSexChart(parentElement) {
+    function addStackedSexChart(parentElement, maleData, femaleData, title) {
         let labels = Object.keys(sectionStats.sections);
-        let males = Object.keys(sectionStats.sections).reduce((arr, key) => {
-            let section = sectionStats.sections[key];
-            arr.push(Math.round(100 * section.stats.numMales / section.stats.numStudents));
-            return arr;
-        }, []);
-        let females = males.reduce((arr, amt) => {
-            arr.push(100 - amt);
-            return arr;
-        }, []);
         let chart = document.createElement('canvas');
         chart.width = 3;
         chart.height = 1;
@@ -571,14 +569,14 @@ window.onload = function () {
                 datasets: [
                     {
                         label: "Females",
-                        data: females,
+                        data: femaleData,
                         backgroundColor: 'rgba(255, 60, 10, 0.2)',
                         borderColor: 'rgba(255, 60, 10, 1)',
                         borderWidth: 1
                     },
                     {
                         label: "Males",
-                        data: males,
+                        data: maleData,
                         backgroundColor: 'rgba(10, 161, 255, 0.2)',
                         borderColor: 'rgba(10, 161, 255, 1)',
                         borderWidth: 1
@@ -588,7 +586,7 @@ window.onload = function () {
             options: {
                 title: {
                     display: true,
-                    text: "Section Sex Composition (% Female and % Male)",
+                    text: title,
                 },
                 scales: {
                     xAxes: [{ stacked: true }],
@@ -633,8 +631,26 @@ window.onload = function () {
         for (let i = 1; i <= studentStats.stats.numChoicesEach; i++) choice_labels.push(`Choice ${i}`);
         let overall = calculateAllocationsPerformance(studentStats.assignments, studentStats.students);
         choiceDistributionChart(run_container, choice_labels, overall, "Allocations (All)");
-        addStackedSexChart(run_container);
+        makeStackedSexSectionDistributionChart(run_container);
         addAthleteChart(run_container);
+    }
+
+
+    /**
+     * Creates a stacked bar chart depicting the distribution of male and female students in each section.
+     * @param {HTML Element} run_container 
+     */
+    function makeStackedSexSectionDistributionChart(run_container) {
+        let maleData = Object.keys(sectionStats.sections).reduce((arr, key) => {
+            let section = sectionStats.sections[key];
+            arr.push(Math.round(100 * section.stats.numMales / section.stats.numStudents));
+            return arr;
+        }, []);
+        let femaleData = maleData.reduce((arr, amt) => {
+            arr.push(100 - amt);
+            return arr;
+        }, []);
+        addStackedSexChart(run_container, maleData, femaleData, "Section Sex Composition (% Female and % Male)");
     }
 
     /** Returns a string with info from the studentStats object. */
@@ -791,6 +807,11 @@ window.onload = function () {
         saveAs(blob, "sortedhat.csv");  // from js/file-saver       
     }
 
+
+    /**
+     * Converts a set to a comma-separated string.
+     * @param {Set} set 
+     */
     function setToCSVString(set) {
         let arr = Array.from(set);
         if (arr.length == 0) return "";
