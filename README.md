@@ -1,5 +1,5 @@
 # SortingHat.org
-Sort students into classes with the cutting edge interface <a href="http://www.SortingHat.org">SortingHat</a>.
+Sort students into classes with this cutting edge interface: <a href="http://www.SortingHat.org">SortingHat</a>.
 
 
 ## Instructions
