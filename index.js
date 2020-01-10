@@ -635,6 +635,24 @@ window.onload = function () {
         addAthleteChart(run_container);
     }
 
+    // TODO: Implement individual method stubs.
+    /**
+     * Checks the results of SortingHat to flag any errors made by the algorithm.
+     * Calls sanityCheckNumStudentsPerSection to ensure that each section has less than or equal to its upper-bound of students.
+     * Calls sanityCheckSexBalancePerSection to ensure that each section has a balance within the percentages specified.
+     * Calls sanityCheckAthleteBalancePerSection to ensure that each section has an athlete balance within the percentages specified.
+     */
+    function sanityCheckResults() {
+        let numStudentsErrors = sanityCheckNumStudentsPerSection();
+        let sexBalanceErrors = sanityCheckSexBalancePerSection();
+        let athleteBalanceErrors = sanityCheckAthleteBalancePerSection();
+        let errors = [];
+        if (numStudentsErrors != "") errors += [numStudentsErrors];
+        if (sexBalanceErrors != "") errors += [sexBalanceErrors]; 
+        if (athleteBalanceErrors != "") errors += [athleteBalanceErrors];
+        return errors.join('\n');
+    }
+
 
     /**
      * Creates a stacked bar chart depicting the distribution of male and female students in each section.
