@@ -38,7 +38,7 @@
         </li>
         <li id="sex_container">
             <fieldset>
-                <legend>Set Legal Sex Ratios</legend>
+                <legend>Set Minimum Sex Ratios</legend>
                 <div id="female_slider">
                     <label for="female_ratio_input">Female</label>
                     <input id="female_ratio_input" type="range" min="0" max="100" value="0" class="slider"
@@ -63,7 +63,9 @@
                 <input id="athlete_ratio_input" type="range" min="0" max="100" value="100" class="slider"
                        oninput="athlete_ratio_output.value = athlete_ratio_input.value + '%'">
                 <output id="athlete_ratio_output">100%</output>
-                <p>These sliders set the maximum percentage of student-athletes allowed in any given section/class.</p>
+                <p>These sliders set the maximum percentage of student-athletes allowed in any given section/class.
+                    Setting this to 100% means that student-athlete proportion should not be a consideration for
+                    course allocations.</p>
             </fieldset>
         </li>
         <li id="run_container">
